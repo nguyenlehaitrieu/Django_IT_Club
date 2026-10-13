@@ -1,0 +1,54 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'core/css/forum.css' %}">
+<div class="forum-edit-page">
+    <div class="forum-edit-header">
+        <h1>Chỉnh sửa chủ đề</h1>
+        <p>Cập nhật nội dung bài viết trên diễn đàn.</p>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="forum-edit-form">
+        {% csrf_token %}
+        <div class="forum-edit-field">
+            <label for="title">Tiêu đề</label>
+            <input id="title" type="text" name="title" maxlength="200" value="{{ topic.title }}" required>
+        </div>
+        <div class="forum-edit-field">
+            <label for="category">Danh mục</label>
+            <select id="category" name="category" required>
+                {% for value, label in categories %}
+                <option value="{{ value }}" {% if topic.category == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="forum-edit-field">
+            <label for="content">Nội dung</label>
+            <textarea id="content" name="content" rows="10" maxlength="20000" required>{{ topic.content }}</textarea>
+        </div>
+        <div class="forum-edit-field">
+            <label for="video_url">Đường dẫn YouTube</label>
+            <input id="video_url" type="url" name="video_url" value="{{ topic.video_url }}">
+        </div>
+        <div class="forum-edit-field">
+            <label>Ảnh hiện tại</label>
+            {% for image in topic.images.all %}
+            <div class="forum-edit-current-image">
+                <img src="{{ image.image.url }}" alt="Ảnh đính kèm {{ forloop.counter }}">
+            </div>
+            {% empty %}
+            <p>Chủ đề chưa có ảnh đính kèm.</p>
+            {% endfor %}
+            <small>Ảnh hiện tại sẽ được giữ nguyên. Bạn có thể thêm ảnh mới, tối đa 4 ảnh cho mỗi chủ đề.</small>
+        </div>
+        <div class="forum-edit-field">
+            <label for="images">Thêm ảnh mới</label>
+            <input id="images" type="file" name="images" accept="image/jpeg,image/png,image/webp" multiple>
+        </div>
+        <div class="forum-edit-actions">
+            <button type="submit">Lưu thay đổi</button>
+            <a href="{% url 'forum_manage' %}">Quay lại quản lý</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

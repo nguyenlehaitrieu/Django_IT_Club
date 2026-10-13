@@ -1,0 +1,255 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Thông báo | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/announcements.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="announcement-page">
+    <section class="announcement-shell">
+
+        <!-- Header -->
+        <header class="announcement-header">
+            <div>
+                <p class="announcement-eyebrow">
+                    IT MUCE / COMMUNITY UPDATES
+                </p>
+
+                <h1>
+                    Thông báo<span class="announcement-accent">.</span>
+                </h1>
+
+                <p class="announcement-subtitle">
+                    Những tin tức, hoạt động và cập nhật mới nhất
+                    từ cộng đồng IT MUCE.
+                </p>
+            </div>
+
+            {% if can_manage_announcements %}
+                <a href="{% url 'announcement_create' %}"
+                   class="announcement-button announcement-button-primary">
+                    <span aria-hidden="true">＋</span>
+                    Tạo thông báo
+                </a>
+            {% endif %}
+        </header>
+
+        <!-- Messages -->
+        {% if messages %}
+            <div class="announcement-messages">
+                {% for message in messages %}
+                    <div class="announcement-message {{ message.tags }}"
+                         role="status">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Section heading -->
+        <div class="announcement-section-heading">
+            <div>
+                <span class="announcement-section-label">BẢNG TIN</span>
+                <h2>Thông báo mới nhất</h2>
+            </div>
+
+            <span class="announcement-count">
+                {{ page_obj.paginator.count }} thông báo
+            </span>
+        </div>
+
+        <!-- Announcement list -->
+        {% if announcements %}
+            <div class="announcement-list">
+
+                {% for announcement in announcements %}
+                    <article class="announcement-card">
+
+                        <!-- Image / Placeholder -->
+                        {% if announcement.image %}
+                            <a href="{% url 'announcement_detail' announcement.pk %}"
+                               class="announcement-card-image-link"
+                               aria-label="Xem thông báo: {{ announcement.title }}">
+                                <img src="{{ announcement.image.url }}"
+                                     alt="{{ announcement.title }}"
+                                     class="announcement-card-image"
+                                     loading="lazy">
+                            </a>
+                        {% else %}
+                            <a href="{% url 'announcement_detail' announcement.pk %}"
+                               class="announcement-card-image-link announcement-card-image-placeholder"
+                               aria-label="Xem thông báo: {{ announcement.title }}">
+                                <span class="announcement-placeholder-mark"
+                                      aria-hidden="true">✦</span>
+                                <span class="announcement-placeholder-label">
+                                    IT MUCE · COMMUNITY
+                                </span>
+                            </a>
+                        {% endif %}
+
+                        <!-- Card content -->
+                        <div class="announcement-card-body">
+
+                            <div class="announcement-card-top">
+                                <span class="announcement-priority {{ announcement.priority }}">
+                                    <span class="announcement-priority-dot"></span>
+
+                                    {% if announcement.priority == "urgent" %}
+                                        KHẨN CẤP
+                                    {% elif announcement.priority == "important" %}
+                                        QUAN TRỌNG
+                                    {% else %}
+                                        THÔNG BÁO
+                                    {% endif %}
+                                </span>
+
+                                {% if announcement.published_at %}
+                                    <time datetime="{{ announcement.published_at|date:'c' }}">
+                                        {{ announcement.published_at|date:"d/m/Y · H:i" }}
+                                    </time>
+                                {% endif %}
+                            </div>
+
+                            <h3 class="announcement-card-title">
+                                <a href="{% url 'announcement_detail' announcement.pk %}">
+                                    {{ announcement.title }}
+                                </a>
+                            </h3>
+
+                            <p class="announcement-card-summary">
+                                {% if announcement.summary %}
+                                    {{ announcement.summary }}
+                                {% else %}
+                                    {{ announcement.content|striptags|truncatewords:35 }}
+                                {% endif %}
+                            </p>
+
+                            <div class="announcement-card-footer">
+                                <span class="announcement-author">
+                                    <span aria-hidden="true">◈</span>
+
+                                    {% if announcement.author %}
+                                        {{ announcement.author.username }}
+                                    {% else %}
+                                        Ban quản trị IT MUCE
+                                    {% endif %}
+                                </span>
+
+                                <a href="{% url 'announcement_detail' announcement.pk %}"
+                                   class="announcement-read-more">
+                                    Đọc chi tiết
+                                    <span aria-hidden="true">↗</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Admin / Editor actions -->
+                        {% if can_manage_announcements %}
+                            <div class="announcement-management">
+                                <a href="{% url 'announcement_edit' announcement.pk %}"
+                                   class="announcement-manage-link">
+                                    ✎ Chỉnh sửa
+                                </a>
+
+                                <form method="post"
+                                      action="{% url 'announcement_delete' announcement.pk %}"
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa thông báo này?');">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="announcement-delete-button">
+                                        Xóa thông báo
+                                    </button>
+                                </form>
+                            </div>
+                        {% endif %}
+
+                    </article>
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <!-- Empty state -->
+            <div class="announcement-empty">
+                <div class="announcement-empty-icon">📢</div>
+                <h2>Chưa có thông báo nào</h2>
+                <p>
+                    Các thông báo chính thức của IT MUCE sẽ xuất hiện tại đây.
+                </p>
+
+                {% if can_manage_announcements %}
+                    <a href="{% url 'announcement_create' %}"
+                       class="announcement-button announcement-button-primary">
+                        ＋ Tạo thông báo đầu tiên
+                    </a>
+                {% endif %}
+            </div>
+
+        {% endif %}
+
+        <!-- Pagination: after all announcement cards -->
+        {% if page_obj.paginator.num_pages > 1 %}
+            <nav class="announcement-pagination"
+                 aria-label="Phân trang thông báo">
+
+                {% if page_obj.has_previous %}
+                    <a class="pagination-link"
+                       href="?page={{ page_obj.previous_page_number }}">
+                        ← Trước
+                    </a>
+                {% else %}
+                    <span class="pagination-link disabled"
+                          aria-disabled="true">
+                        ← Trước
+                    </span>
+                {% endif %}
+
+                <div class="pagination-pages">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <span class="pagination-number active"
+                                  aria-current="page">
+                                {{ num }}
+                            </span>
+                        {% else %}
+                            <a class="pagination-number"
+                               href="?page={{ num }}">
+                                {{ num }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if page_obj.has_next %}
+                    <a class="pagination-link"
+                       href="?page={{ page_obj.next_page_number }}">
+                        Sau →
+                    </a>
+                {% else %}
+                    <span class="pagination-link disabled"
+                          aria-disabled="true">
+                        Sau →
+                    </span>
+                {% endif %}
+
+            </nav>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer class="announcement-footer">
+            <a href="{% url 'home' %}">
+                <span aria-hidden="true">←</span>
+                Quay về trang chủ
+            </a>
+
+            <span>IT MUCE · LEARN · CREATE · COLLABORATE</span>
+        </footer>
+
+    </section>
+</div>
+{% endblock %}

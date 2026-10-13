@@ -1,0 +1,37 @@
+{% load forum_extras %}
+{% for reply in replies %}
+    <div class="forum-comment-reply" id="comment-{{ reply.pk }}">
+        <div class="forum-topic-avatar forum-reply-avatar">
+            {% if reply.author.member_profile.avatar %}
+                <img src="{{ reply.author.member_profile.avatar.url }}" alt="Avatar của {{ reply.author.username }}" loading="lazy">
+            {% else %}
+                <span>{{ reply.author.username|first|upper }}</span>
+            {% endif %}
+        </div>
+        <div class="forum-comment-body">
+            <div class="forum-comment-meta">
+                <strong>{{ reply.author.username }}</strong>
+                <span>{{ reply.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            {% if reply.is_deleted %}
+                <div class="forum-comment-content forum-comment-deleted"><em>Bình luận này đã bị xóa.</em></div>
+            {% else %}
+                <div class="forum-comment-content">{{ reply.content|forum_comment_content }}</div>
+                {% if user.is_authenticated %}
+                    <button type="button" class="forum-reply-btn" data-comment-id="{{ reply.pk }}" data-username="{{ reply.author.username }}">↩ Trả lời</button>
+                {% endif %}
+            {% endif %}
+            {% if user.is_authenticated and user.pk == reply.author_id and not reply.is_deleted %}
+                <form method="post" action="{% url 'forum_delete_comment' topic.pk reply.pk %}" class="forum-delete-comment-form" onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này không?');">
+                    {% csrf_token %}
+                    <button type="submit" class="forum-delete-comment-btn">🗑 Xóa</button>
+                </form>
+            {% endif %}
+        </div>
+        {% if reply.replies.all %}
+            <div class="forum-comment-replies forum-comment-nested-replies">
+                {% include "core/forum/_comment_replies.html" with replies=reply.replies.all %}
+            </div>
+        {% endif %}
+    </div>
+{% endfor %}

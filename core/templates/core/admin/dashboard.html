@@ -1,0 +1,317 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07111f">
+    <title>Admin Dashboard | IT MUCE</title>
+
+    <link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/cursor-effect.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/admin-dashboard.css' %}">
+</head>
+
+<body class="admin-page">
+    <canvas id="techBackground" aria-hidden="true"></canvas>
+    <div id="cursorGlow" aria-hidden="true"></div>
+    <div id="cursorRing" aria-hidden="true"></div>
+
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="{% url 'home' %}" class="admin-brand">
+                <span class="brand-mark">IT</span>
+                <span class="brand-copy">
+                    <strong>IT MUCE</strong>
+                    <small>ADMIN CONSOLE</small>
+                </span>
+            </a>
+
+            <div class="sidebar-section">
+                <p class="sidebar-label">WORKSPACE</p>
+                <a href="{% url 'admin_dashboard' %}" class="sidebar-link active">
+                    <span class="sidebar-icon">▦</span>
+                    <span>Tổng quan</span>
+                </a>
+                <a href="#members" class="sidebar-link">
+                    <span class="sidebar-icon">♙</span>
+                    <span>Thành viên</span>
+                </a>
+
+                <a href="{% url 'forum_manage' %}" class="sidebar-link">
+                    <span class="sidebar-icon">▤</span>
+                    <span>Quản lý Topic</span>
+                </a>
+
+                <a href="{% url 'home' %}" class="sidebar-link">
+                    <span class="sidebar-icon">↗</span>
+                    <span>Website</span>
+                </a>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="admin-identity">
+                    <div class="admin-avatar">{{ request.user.username|first|upper }}</div>
+                    <div class="admin-identity-copy">
+                        <strong>{{ request.user.username }}</strong>
+                        <small>Administrator</small>
+                    </div>
+                    <span class="online-dot" title="Đang hoạt động"></span>
+                </div>
+
+                <a href="{% url 'profile' %}" class="sidebar-link profile-link">
+                    <span class="sidebar-icon">◎</span>
+                    <span>Hồ sơ của tôi</span>
+                </a>
+
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="sidebar-logout">
+                        <span>↗</span> Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <header class="admin-header">
+                <div class="header-copy">
+                    <p class="eyebrow"><span class="eyebrow-dot"></span> IT MUCE / ADMINISTRATION</p>
+                    <h1>Dashboard<span class="title-period">.</span></h1>
+                    <p class="admin-subtitle">Quản lý tài khoản và cộng đồng IT MUCE.</p>
+                </div>
+                <a href="{% url 'home' %}" class="back-website">
+                    <span>↗</span> Xem website
+                </a>
+            </header>
+
+            <section class="welcome-strip">
+                <div class="welcome-mark">✦</div>
+                <div>
+                    <strong>Chào mừng trở lại, {{ request.user.username }}!</strong>
+                    <p>Đây là tổng quan hoạt động tài khoản trong hệ thống.</p>
+                </div>
+                <span class="system-status"><i></i> Hệ thống đang hoạt động</span>
+            </section>
+
+
+            <section class="admin-quick-actions">
+                <a href="{% url 'forum_manage' %}" class="admin-quick-action">
+                    <span class="quick-action-icon">▤</span>
+                    <span class="quick-action-content">
+                        <strong>Quản lý Topic</strong>
+                        <small>Chỉnh sửa, xóa và quản lý bài đăng diễn đàn</small>
+                    </span>
+                    <span class="quick-action-arrow">→</span>
+                </a>
+            </section>
+
+
+            <section class="stats-grid" aria-label="Thống kê tài khoản">
+                <article class="stat-card stat-blue">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">♙</span>
+                        <span class="stat-tag">ALL USERS</span>
+                    </div>
+                    <p>Tổng tài khoản</p>
+                    <strong>{{ total_users }}</strong>
+                    <small>Toàn bộ người dùng</small>
+                    <span class="stat-decoration">01</span>
+                </article>
+
+                <article class="stat-card stat-cyan">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">◇</span>
+                        <span class="stat-tag">MEMBERS</span>
+                    </div>
+                    <p>Thành viên</p>
+                    <strong>{{ member_count }}</strong>
+                    <small>Nhóm Member</small>
+                    <span class="stat-decoration">02</span>
+                </article>
+
+                <article class="stat-card stat-purple">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">⌘</span>
+                        <span class="stat-tag">EDITORS</span>
+                    </div>
+                    <p>Biên tập viên</p>
+                    <strong>{{ editor_count }}</strong>
+                    <small>Nhóm Editor</small>
+                    <span class="stat-decoration">03</span>
+                </article>
+
+                <article class="stat-card stat-green">
+                    <div class="stat-card-top">
+                        <span class="stat-icon">✳</span>
+                        <span class="stat-tag">ADMINS</span>
+                    </div>
+                    <p>Quản trị viên</p>
+                    <strong>{{ admin_count }}</strong>
+                    <small>Nhóm Admin</small>
+                    <span class="stat-decoration">04</span>
+                </article>
+            </section>
+
+            <section class="members-panel" id="members">
+                <div class="panel-heading">
+                    <div>
+                        <p class="panel-kicker">ACCOUNT MANAGEMENT</p>
+                        <h2>Thành viên</h2>
+                        <p>Danh sách tài khoản và quyền truy cập trong hệ thống.</p>
+                    </div>
+                    <span class="total-badge">{{ users|length }} kết quả</span>
+                </div>
+
+                <form method="get" class="member-filters">
+                    <label class="search-field">
+                        <span class="search-icon">⌕</span>
+                        <input
+                            type="search"
+                            name="q"
+                            value="{{ search_query }}"
+                            placeholder="Tìm username, email, họ tên..."
+                            aria-label="Tìm thành viên"
+                        >
+                    </label>
+
+                    <select name="role" aria-label="Lọc theo vai trò">
+                        <option value="">Tất cả vai trò</option>
+                        <option value="Member" {% if role_filter == "Member" %}selected{% endif %}>Member</option>
+                        <option value="Editor" {% if role_filter == "Editor" %}selected{% endif %}>Editor</option>
+                        <option value="Admin" {% if role_filter == "Admin" %}selected{% endif %}>Admin</option>
+                        <option value="Superuser" {% if role_filter == "Superuser" %}selected{% endif %}>Superuser</option>
+                        <option value="Unassigned" {% if role_filter == "Unassigned" %}selected{% endif %}>Chưa phân nhóm</option>
+                    </select>
+
+                    <button type="submit" class="filter-button">Lọc kết quả</button>
+                    <a href="{% url 'admin_dashboard' %}" class="reset-button">Xóa lọc</a>
+                </form>
+
+                <div class="table-wrap">
+                    <table class="members-table">
+                        <thead>
+                            <tr>
+                                <th>Tài khoản</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Ngày tham gia</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in users %}
+                                <tr>
+                                    <td>
+                                        <div class="member-cell">
+                                            <span class="member-avatar">{{ member.username|first|upper }}</span>
+                                            <div class="member-info">
+                                                <strong>{{ member.username }}</strong>
+                                                <small>
+                                                    {% if member.get_full_name %}
+                                                        {{ member.get_full_name }}
+                                                    {% else %}
+                                                        Chưa cập nhật tên
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        {% if member.email %}
+                                            <span class="member-email">{{ member.email }}</span>
+                                        {% else %}
+                                            <span class="muted">Chưa có email</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <div class="role-list">
+                                            {% if member.is_superuser %}
+                                                <span class="role-pill role-admin">Superuser</span>
+                                            {% endif %}
+                                            {% for group in member.groups.all %}
+                                                <span class="role-pill {% if group.name == 'Admin' %}role-admin{% elif group.name == 'Editor' %}role-editor{% else %}role-member{% endif %}">
+                                                    {{ group.name }}
+                                                </span>
+                                            {% empty %}
+                                                {% if not member.is_superuser %}
+                                                    <span class="role-pill role-none">Chưa phân nhóm</span>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+
+                                    <td><span class="date-text">{{ member.date_joined|date:"d/m/Y" }}</span></td>
+
+                                    <td>
+                                        {% if member.is_active %}
+                                            <span class="status-pill active"><i></i> Hoạt động</span>
+                                        {% else %}
+                                            <span class="status-pill inactive"><i></i> Đã khóa</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="member-actions-cell">
+                                        {% if not member.is_superuser and member.id != request.user.id %}
+                                            <div class="member-actions">
+                                                <form method="post" action="{% url 'change_member_role' member.id %}" class="role-change-form">
+                                                    {% csrf_token %}
+                                                    <select name="role" aria-label="Vai trò mới của {{ member.username }}">
+                                                        <option value="Member" {% if member.groups.all|length == 0 %}selected{% endif %}>Member</option>
+                                                        <option value="Editor" {% if member.groups.all.0.name == "Editor" %}selected{% endif %}>Editor</option>
+                                                        <option value="Admin" {% if member.groups.all.0.name == "Admin" %}selected{% endif %}>Admin</option>
+                                                    </select>
+                                                    <button type="submit" class="save-role-button">Lưu</button>
+                                                </form>
+
+                                                <form
+                                                    method="post"
+                                                    action="{% url 'toggle_member_status' member.id %}"
+                                                    class="status-action-form"
+                                                    onsubmit="return confirm('Bạn có chắc muốn {% if member.is_active %}khóa{% else %}mở khóa{% endif %} tài khoản {{ member.username|escapejs }}?');"
+                                                >
+                                                    {% csrf_token %}
+                                                    {% if member.is_active %}
+                                                        <button type="submit" class="status-action-btn lock-btn">Khóa</button>
+                                                    {% else %}
+                                                        <button type="submit" class="status-action-btn unlock-btn">Mở khóa</button>
+                                                    {% endif %}
+                                                </form>
+                                            </div>
+                                        {% else %}
+                                            <span class="muted protected-label">Tài khoản được bảo vệ</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <span class="empty-icon">⌕</span>
+                                        <strong>Không tìm thấy tài khoản</strong>
+                                        <small>Thử thay đổi từ khóa hoặc bộ lọc.</small>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel-footer">
+                    <span>Đang hiển thị <strong>{{ users|length }}</strong> tài khoản trong kết quả lọc.</span>
+                    <span><i class="footer-status-dot"></i> Dữ liệu từ Django database</span>
+                </div>
+            </section>
+
+            <footer class="admin-footer">
+                <span>IT MUCE</span>
+                <span>LEARN <b>·</b> CREATE <b>·</b> COLLABORATE</span>
+            </footer>
+        </main>
+    </div>
+
+    <script src="{% static 'core/js/cursor-effect.js' %}" defer></script>
+</body>
+</html>

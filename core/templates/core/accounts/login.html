@@ -1,0 +1,87 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Đăng nhập | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+
+    <a href="{% url 'home' %}" class="brand">
+        <span class="brand-mark">IT</span>
+        <span>IT MUCE</span>
+    </a>
+
+    <section class="auth-card">
+        <p class="eyebrow">WELCOME BACK</p>
+
+        <h1>Đăng nhập</h1>
+
+        <p class="description">
+            Đăng nhập để tiếp tục kết nối với cộng đồng IT MUCE.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}" role="status">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="message error" role="alert">
+                Tên đăng nhập hoặc mật khẩu không chính xác.
+                Vui lòng thử lại.
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <label for="username">Tên đăng nhập</label>
+            <input
+                id="username"
+                type="text"
+                name="username"
+                autocomplete="username"
+                required
+                autofocus
+            >
+
+            <label for="password">Mật khẩu</label>
+            <input
+                id="password"
+                type="password"
+                name="password"
+                autocomplete="current-password"
+                required
+            >
+
+            <button type="submit" class="auth-button">
+                Đăng nhập <span>↗</span>
+            </button>
+        </form>
+
+        <p class="auth-switch">
+            Chưa có tài khoản?
+            <a href="{% url 'register' %}">Đăng ký ngay</a>
+        </p>
+
+        <a href="{% url 'home' %}" class="back-home">
+            ← Quay về trang chủ
+        </a>
+    </section>
+
+    <p class="auth-footer">
+        LEARN · CREATE · COLLABORATE
+    </p>
+
+</div>
+{% endblock %}

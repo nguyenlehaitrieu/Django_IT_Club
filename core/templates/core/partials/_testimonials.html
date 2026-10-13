@@ -1,0 +1,17 @@
+{% load static %}
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div style="text-align:center">
+    <div class="section-tag">Community voices</div>
+    <h2 class="section-title">Cùng nhau tạo nên điều mới</h2>
+  </div>
+  <div class="testi-track-wrap">
+    <div class="testi-track" id="testiTrack"></div>
+  </div>
+  <div style="display:flex;justify-content:center;margin-top:32px">
+    <button id="testiToggle" onclick="toggleTestimonials()" aria-label="Pause testimonials" style="background:var(--bg2);border:1px solid var(--border2);color:var(--text2);padding:10px 18px;border-radius:24px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;transition:border-color .5s var(--silk),color .5s var(--silk)">
+      <svg id="testiIcon" width="14" height="14" fill="currentColor" stroke="none" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      <span id="testiLabel">Pause</span>
+    </button>
+  </div>
+</section>

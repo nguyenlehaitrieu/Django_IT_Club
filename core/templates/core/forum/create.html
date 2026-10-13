@@ -1,0 +1,124 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Tạo chủ đề | IT MUCE Forum{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/forum.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="forum-page">
+    <div class="forum-container forum-form-container">
+
+        <a href="{% url 'forum_list' %}" class="forum-back-link">
+            ← Quay lại diễn đàn
+        </a>
+
+        <header class="forum-form-heading">
+            <span class="forum-eyebrow">IT MUCE COMMUNITY</span>
+            <h1>Tạo chủ đề mới</h1>
+            <p>
+                Đặt câu hỏi, chia sẻ kiến thức hoặc mở một cuộc thảo luận
+                cùng cộng đồng công nghệ.
+            </p>
+        </header>
+
+        
+        <form method="post" enctype="multipart/form-data" class="forum-create-form">
+
+            {% csrf_token %}
+
+            <div class="forum-form-notice">
+                <strong>Trước khi đăng</strong>
+                <p>
+                    Chủ đề sẽ được gửi để kiểm duyệt trước khi công khai.
+                    Hãy trình bày rõ ràng và tránh spam hoặc nội dung công kích.
+                </p>
+            </div>
+
+            <div class="forum-form-field">
+                <label for="topic-title">Tiêu đề <span>*</span></label>
+                <input
+                    id="topic-title"
+                    type="text"
+                    name="title"
+                    maxlength="200"
+                    required
+                    value="{{ request.POST.title|default:'' }}"
+                    placeholder="Ví dụ: Nên học Django hay FastAPI trước?"
+                >
+                <small>Tối đa 200 ký tự.</small>
+            </div>
+
+            <div class="forum-form-field">
+                <label for="topic-category">Danh mục <span>*</span></label>
+                <select id="topic-category" name="category" required>
+                    {% for value, label in categories %}
+                        <option value="{{ value }}"
+                            {% if request.POST.category == value %}selected{% endif %}>
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="forum-form-field">
+                <label for="topic-content">Nội dung <span>*</span></label>
+                <textarea
+                    id="topic-content"
+                    name="content"
+                    rows="12"
+                    maxlength="20000"
+                    required
+                    placeholder="Mô tả câu hỏi, vấn đề đang gặp hoặc kiến thức bạn muốn chia sẻ..."
+                >{{ request.POST.content|default:'' }}</textarea>
+                <small>Tối đa 20.000 ký tự.</small>
+            </div>
+
+
+            
+            <div class="forum-form-field">
+                <label for="topic-images">Ảnh đính kèm</label>
+                <input
+                    id="topic-images"
+                    type="file"
+                    name="images"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                >
+                <small>Tối đa 4 ảnh, mỗi ảnh không quá 5 MB. Hỗ trợ JPG, PNG và WebP.</small>
+                <div id="image-preview" class="forum-image-preview"></div>
+            </div>
+
+            <div class="forum-form-field">
+                <label for="topic-video">Video YouTube</label>
+                <input
+                    id="topic-video"
+                    type="url"
+                    name="video_url"
+                    maxlength="500"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                >
+                <small>Dán đường dẫn video YouTube nếu muốn minh họa bài viết.</small>
+            </div>
+
+
+            <div class="forum-form-actions">
+                <a href="{% url 'forum_list' %}" class="forum-cancel-btn">
+                    Hủy
+                </a>
+                <button type="submit" class="forum-primary-btn">
+                    Gửi duyệt →
+                </button>
+            </div>
+        </form>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/forum-create.js' %}" defer></script>
+{% endblock %}

@@ -1,0 +1,84 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if is_edit %}Chỉnh sửa dự án{% else %}Thêm dự án{% endif %} | IT MUCE
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <section class="auth-card profile-card">
+        <div class="profile-topline">
+            <span class="profile-role">PERSONAL PORTFOLIO</span>
+        </div>
+
+        <h1 class="profile-display-name">
+            {% if is_edit %}Chỉnh sửa dự án{% else %}Thêm dự án mới{% endif %}
+        </h1>
+
+        <p class="profile-short-bio">
+            {% if is_edit %}
+                Cập nhật thông tin dự án của bạn.
+            {% else %}
+                Chia sẻ dự án cá nhân với cộng đồng IT MUCE.
+            {% endif %}
+        </p>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="profile-field">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+
+                    {% if field.name == "thumbnail" and post and post.thumbnail %}
+                        <div class="current-thumbnail">
+                            <p>Ảnh hiện tại:</p>
+                            <img
+                                src="{{ post.thumbnail.url }}"
+                                alt="Thumbnail hiện tại"
+                                style="max-width: 220px; border-radius: 12px;"
+                            >
+                            <p>Chọn ảnh mới nếu muốn thay ảnh hiện tại.</p>
+                        </div>
+                    {% endif %}
+
+                    {{ field }}
+
+                    {% if field.help_text %}
+                        <small>{{ field.help_text }}</small>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <p class="form-errors">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="profile-actions">
+                <button type="submit" class="profile-submit">
+                    {% if is_edit %}Lưu thay đổi{% else %}Tạo dự án{% endif %}
+                </button>
+
+                <a href="{% url 'member_post_list' %}" class="back-home">
+                    Hủy
+                </a>
+            </div>
+        </form>
+    </section>
+</div>
+{% endblock %}

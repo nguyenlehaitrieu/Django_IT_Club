@@ -1,0 +1,451 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Hồ sơ thành viên | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container profile-container">
+
+    <a href="{% url 'home' %}" class="brand">
+        <span class="brand-mark">IT</span>
+        <span>IT MUCE</span>
+    </a>
+
+    <section class="auth-card profile-card">
+
+        <div class="profile-topline">
+            <span class="eyebrow">MEMBER AREA</span>
+            <span class="profile-status">
+                <span class="status-dot"></span>
+                PERSONAL PROFILE
+            </span>
+        </div>
+
+        <h1>Hồ sơ của bạn<span class="heading-dot">.</span></h1>
+
+        <p class="description">
+            Không ngừng học hỏi, xây dựng và chia sẻ hành trình công nghệ của bạn.
+        </p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}" role="status">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% if account_form.non_field_errors %}
+            <div class="message error">
+                {{ account_form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% if profile_form.non_field_errors %}
+            <div class="message error">
+                {{ profile_form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            class="profile-form"
+            id="profileForm"
+        >
+            {% csrf_token %}
+
+            <input
+                type="file"
+                name="{{ profile_form.avatar.html_name }}"
+                id="avatar-upload"
+                accept="image/jpeg,image/png,image/webp"
+                hidden
+            >
+
+            <!-- Thông tin tổng quan -->
+            <section class="profile-hero">
+
+                <div class="profile-avatar-column">
+                    <div class="profile-avatar" id="avatarPreview">
+                        {% if profile.avatar %}
+                            <img
+                                src="{{ profile.avatar.url }}"
+                                alt="Ảnh đại diện của {{ user.username }}"
+                            >
+                        {% else %}
+                            <span>{{ user.username|first|upper }}</span>
+                        {% endif %}
+                    </div>
+
+                    <button
+                        type="button"
+                        class="avatar-change-button"
+                        id="changeAvatarButton"
+                    >
+                        <span aria-hidden="true">↗</span>
+                        Đổi ảnh
+                    </button>
+
+                    <span class="avatar-hint" id="avatarHint">
+                        JPG · PNG · WEBP
+                    </span>
+
+                    <span
+                        class="avatar-error"
+                        id="avatarError"
+                        role="alert"
+                    ></span>
+                </div>
+
+                <div class="profile-identity">
+                    <span class="identity-label">YOUR DEVELOPER ID</span>
+
+                    <strong class="profile-display-name">
+                        {% if user.get_full_name %}
+                            {{ user.get_full_name }}
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </strong>
+
+                    <span class="profile-username">
+                        @{{ user.username }}
+                    </span>
+
+                    <span class="profile-role">
+                        {{ profile_role }}
+                    </span>
+
+                    {% if profile.bio %}
+                        <p class="profile-short-bio">{{ profile.bio }}</p>
+                    {% else %}
+                        <p class="profile-short-bio empty-bio">
+                            Chưa có phần giới thiệu. Hãy kể một chút về bạn nhé!
+                        </p>
+                    {% endif %}
+
+                    <div class="profile-social-links">
+                        {% if profile.github_url %}
+                            <a
+                                href="{{ profile.github_url }}"
+                                class="profile-social-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span aria-hidden="true">⌘</span>
+                                GitHub
+                                <span aria-hidden="true">↗</span>
+                            </a>
+                        {% endif %}
+
+                        {% if profile.portfolio_url %}
+                            <a
+                                href="{{ profile.portfolio_url }}"
+                                class="profile-social-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <span aria-hidden="true">↗</span>
+                                Portfolio
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="profile-hero-decoration" aria-hidden="true">
+                    <span>IT</span>
+                    <span>MUCE</span>
+                </div>
+
+            </section>
+
+            <!-- Tiến trình hoàn thiện hồ sơ -->
+            <div class="profile-progress">
+                <div class="progress-label">
+                    <span>HỒ SƠ CÁ NHÂN</span>
+                    <span>Hãy bổ sung thông tin của bạn</span>
+                </div>
+
+                <div
+                    class="progress-track"
+                    role="progressbar"
+                    aria-label="Mức độ hoàn thiện hồ sơ"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="{{ profile_completion }}"
+                >
+                    <div
+                        class="progress-fill"
+                        style="--completion: {{ profile_completion }}%;"
+                    ></div>
+                </div>
+            </div>
+
+            <!-- Thông tin tài khoản -->
+            <section class="profile-form-section">
+                <div class="profile-section-heading">
+                    <span class="section-number">01</span>
+                    <div>
+                        <h2>Thông tin tài khoản</h2>
+                        <p>Thông tin cơ bản để mọi người nhận diện bạn.</p>
+                    </div>
+                </div>
+
+                <div class="profile-fields-grid">
+                    {% for field in account_form %}
+                        <div class="profile-field">
+                            <label for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+
+                            {{ field }}
+
+                            {% for error in field.errors %}
+                                <p class="field-error">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Thông tin developer -->
+            <section class="profile-form-section">
+                <div class="profile-section-heading">
+                    <span class="section-number">02</span>
+                    <div>
+                        <h2>Developer identity</h2>
+                        <p>Chia sẻ kỹ năng, sở thích và định hướng của bạn.</p>
+                    </div>
+                </div>
+
+                <div class="profile-fields-grid">
+                    {% for field in profile_form %}
+                        {% if field.name != "avatar" %}
+                            <div class="profile-field {% if field.name == 'bio' or field.name == 'skills' %}field-full{% endif %}">
+                                <label for="{{ field.id_for_label }}">
+                                    {{ field.label }}
+                                </label>
+
+                                {{ field }}
+
+                                {% if field.name == "bio" %}
+                                    <div class="character-counter">
+                                        <span id="bioCounter">0</span>/250 ký tự
+                                    </div>
+                                {% endif %}
+
+                                {% if field.help_text %}
+                                    <small class="field-help">
+                                        {{ field.help_text }}
+                                    </small>
+                                {% endif %}
+
+                                {% for error in field.errors %}
+                                    <p class="field-error">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </section>
+
+            <!-- Lưu thay đổi -->
+            <div class="profile-save-area">
+                <div class="save-note">
+                    <span class="save-note-icon">✓</span>
+                    <span>
+                        Thông tin chỉ được cập nhật khi bạn lưu thay đổi.
+                    </span>
+                </div>
+
+                <button
+                    type="submit"
+                    class="auth-button profile-save-button"
+                    id="saveProfileButton"
+                >
+                    Lưu thay đổi <span>↗</span>
+                </button>
+            </div>
+
+        </form>
+
+        <!-- Điều hướng -->
+        <div class="profile-actions">
+            <a href="{% url 'home' %}" class="back-home">
+                <span aria-hidden="true">←</span>
+                Quay về trang chủ
+            </a>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="profile-logout">
+                    Đăng xuất
+                </button>
+            </form>
+        </div>
+
+    </section>
+
+    <p class="auth-footer">LEARN · CREATE · COLLABORATE</p>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const input = document.getElementById("avatar-upload");
+    const changeButton = document.getElementById("changeAvatarButton");
+    const preview = document.getElementById("avatarPreview");
+    const hint = document.getElementById("avatarHint");
+    const error = document.getElementById("avatarError");
+    const bio = document.getElementById("id_profile-bio");
+    const bioCounter = document.getElementById("bioCounter");
+
+    const progressFill = document.querySelector(".progress-fill");
+    const progressTrack = document.querySelector(
+        '.progress-track[role="progressbar"]'
+    );
+    const progressLabel = document.querySelector(
+        ".progress-label span:last-child"
+    );
+    const profileForm = document.getElementById("profileForm");
+
+    // Cập nhật tiến trình hoàn thiện hồ sơ.
+    function updateProfileProgress() {
+        if (!profileForm || !progressFill || !progressTrack) {
+            return;
+        }
+
+        const firstName = document.getElementById("id_account-first_name");
+        const lastName = document.getElementById("id_account-last_name");
+        const email = document.getElementById("id_account-email");
+        const interests = document.getElementById("id_profile-interests");
+        const skills = document.getElementById("id_profile-skills");
+        const github = document.getElementById("id_profile-github_url");
+        const portfolio = document.getElementById("id_profile-portfolio_url");
+
+        const hasAvatar = Boolean(
+            document.querySelector("#avatarPreview img") ||
+            (input && input.files && input.files.length > 0)
+        );
+
+        const checks = [
+            Boolean(firstName && firstName.value.trim()),
+            Boolean(lastName && lastName.value.trim()),
+            Boolean(email && email.value.trim()),
+            hasAvatar,
+            Boolean(bio && bio.value.trim()),
+            Boolean(interests && interests.value),
+            Boolean(skills && skills.value.trim()),
+            Boolean(github && github.value.trim()),
+            Boolean(portfolio && portfolio.value.trim())
+        ];
+
+        const completed = checks.filter(Boolean).length;
+        const percentage = Math.round(
+            completed / checks.length * 100
+        );
+
+        progressFill.style.setProperty(
+            "--completion",
+            percentage + "%"
+        );
+
+        progressTrack.setAttribute("aria-valuenow", percentage);
+
+        if (progressLabel) {
+            progressLabel.textContent =
+                percentage + "% hoàn thành";
+        }
+    }
+
+    if (profileForm) {
+        profileForm.addEventListener("input", updateProfileProgress);
+        profileForm.addEventListener("change", updateProfileProgress);
+    }
+
+    updateProfileProgress();
+
+    // Chọn và xem trước ảnh đại diện.
+    if (input && changeButton && preview) {
+        changeButton.addEventListener("click", function () {
+            input.click();
+        });
+
+        input.addEventListener("change", function () {
+            const file = input.files && input.files[0];
+
+            if (error) {
+                error.textContent = "";
+            }
+
+            if (!file) {
+                return;
+            }
+
+            const allowedTypes = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!allowedTypes.includes(file.type)) {
+                if (error) {
+                    error.textContent =
+                        "Chỉ chấp nhận ảnh JPG, PNG hoặc WEBP.";
+                }
+
+                input.value = "";
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                if (error) {
+                    error.textContent =
+                        "Ảnh không được vượt quá 5 MB.";
+                }
+
+                input.value = "";
+                return;
+            }
+
+            const imageUrl = URL.createObjectURL(file);
+            const image = document.createElement("img");
+
+            image.src = imageUrl;
+            image.alt = "Ảnh đại diện xem trước";
+
+            image.onload = function () {
+                URL.revokeObjectURL(imageUrl);
+            };
+
+            preview.replaceChildren(image);
+
+            if (hint) {
+                hint.textContent = file.name;
+            }
+
+            updateProfileProgress();
+        });
+    }
+
+    // Đếm ký tự phần giới thiệu.
+    if (bio && bioCounter) {
+        function updateBioCounter() {
+            bioCounter.textContent = bio.value.length;
+        }
+
+        bio.addEventListener("input", updateBioCounter);
+        updateBioCounter();
+    }
+});
+</script>
+{% endblock %}

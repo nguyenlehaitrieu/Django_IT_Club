@@ -1,0 +1,184 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Diễn đàn IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/forum.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="forum-page">
+    <div class="forum-container">
+
+        <!-- HEADER -->
+        <header class="forum-hero">
+            <div class="forum-hero-copy">
+                <span class="forum-eyebrow">IT MUCE COMMUNITY</span>
+                <h1>Developer <span>Forum</span></h1>
+                <p>
+                    Hỏi đáp, chia sẻ kiến thức và cùng nhau phát triển
+                    trong cộng đồng công nghệ IT MUCE.
+                </p>
+            </div>
+
+            <a class="forum-primary-btn" href="{% url 'forum_create' %}">
+                <span aria-hidden="true">＋</span> Tạo chủ đề
+            </a>
+        </header>
+
+        <!-- TÌM KIẾM VÀ LỌC -->
+        <form method="get" class="forum-toolbar">
+            <div class="forum-search">
+                <span aria-hidden="true">⌕</span>
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ search_query }}"
+                    placeholder="Tìm kiếm chủ đề..."
+                    aria-label="Tìm kiếm chủ đề"
+                >
+            </div>
+
+            <select name="category" aria-label="Lọc danh mục">
+                <option value="">Tất cả danh mục</option>
+                {% for value, label in categories %}
+                    <option
+                        value="{{ value }}"
+                        {% if selected_category == value %}selected{% endif %}
+                    >
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="forum-filter-btn">
+                Tìm kiếm
+            </button>
+        </form>
+
+        <!-- TIÊU ĐỀ DANH SÁCH -->
+        <div class="forum-section-heading">
+            <div>
+                <h2>Chủ đề cộng đồng</h2>
+                <p>Những cuộc thảo luận được công khai</p>
+            </div>
+
+            <span class="forum-topic-count">
+                {{ page_obj.paginator.count }} chủ đề
+            </span>
+        </div>
+
+        <!-- DANH SÁCH CHỦ ĐỀ -->
+        {% if topics %}
+            <div class="forum-topic-list">
+                {% for topic in topics %}
+                    <article class="forum-topic-card">
+
+                        <!-- AVATAR TÁC GIẢ -->
+                        <div class="forum-topic-avatar">
+                            {% if topic.author.member_profile.avatar %}
+                                <img
+                                    src="{{ topic.author.member_profile.avatar.url }}"
+                                    alt="Avatar của {{ topic.author.username }}"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <span>
+                                    {{ topic.author.username|first|upper }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="forum-topic-main">
+
+                            <!-- DANH MỤC VÀ THỜI GIAN -->
+                            <div class="forum-topic-meta">
+                                <span class="forum-category">
+                                    {{ topic.get_category_display }}
+                                </span>
+
+                                <span>
+                                    {{ topic.created_at|date:"d/m/Y H:i" }}
+                                </span>
+                            </div>
+
+                            <!-- TIÊU ĐỀ -->
+                            <h3>
+                                <a href="{% url 'forum_detail' topic.pk %}">
+                                    {{ topic.title }}
+                                </a>
+                            </h3>
+
+                            <!-- NỘI DUNG TÓM TẮT -->
+                            <p class="forum-topic-excerpt">{{ topic.content|striptags|truncatechars:220 }}</p>
+
+                            <!-- TÁC GIẢ VÀ THỐNG KÊ -->
+                            <div class="forum-topic-footer">
+                                <span class="forum-topic-author">
+                                    <strong>{{ topic.author.username }}</strong>
+                                </span>
+
+                                <span>
+                                    ♥ {{ topic.like_count }} lượt thích
+                                </span>
+
+                                <span>
+                                    ◷ {{ topic.comment_count }} bình luận
+                                </span>
+                            </div>
+
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+            <!-- PHÂN TRANG -->
+            {% if page_obj.has_other_pages %}
+                <nav class="forum-pagination" aria-label="Phân trang">
+
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query|urlencode }}&category={{ selected_category|urlencode }}">
+                            ← Trước
+                        </a>
+                    {% endif %}
+
+                    <span>
+                        Trang {{ page_obj.number }}
+                        / {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}&q={{ search_query|urlencode }}&category={{ selected_category|urlencode }}">
+                            Sau →
+                        </a>
+                    {% endif %}
+
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <!-- KHÔNG CÓ KẾT QUẢ -->
+            <div class="forum-empty">
+                <div class="forum-empty-icon">⌕</div>
+
+                <h3>Chưa tìm thấy chủ đề nào</h3>
+
+                <p>
+                    Thử từ khóa khác hoặc tạo chủ đề đầu tiên
+                    cho cộng đồng nhé!
+                </p>
+
+                <a
+                    class="forum-primary-btn"
+                    href="{% url 'forum_create' %}"
+                >
+                    Tạo chủ đề mới
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

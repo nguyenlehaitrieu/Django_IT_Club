@@ -1,0 +1,62 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi" data-theme="{% block theme_key %}{{ active_theme_key|default:'cyber_blue' }}{% endblock %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}IT MUCE Club | Cộng đồng Công nghệ{% endblock %}</title>
+
+    <!--font-->    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+    <!-- CSS dùng chung -->
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/themes.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/cursor-effect.css' %}">
+
+    <!-- CSS riêng của từng trang -->
+    {% block extra_css %}{% endblock %}
+
+
+</head>
+
+<body class="{% block body_class %}site-layout{% endblock %}">
+    <canvas id="techBackground" aria-hidden="true"></canvas>
+    <div id="cursorGlow" aria-hidden="true"></div>
+    <div id="cursorRing" aria-hidden="true"></div>
+
+   
+    {% include "core/partials/_navbar.html" %}
+
+
+    
+
+    {% if messages %}
+        <div class="django-messages" role="status" aria-live="polite">
+            {% for message in messages %}
+                <div class="django-message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main class="site-main">
+        {% block content %}{% endblock %}
+    </main>
+
+
+    {% include "core/partials/_footer.html" %}
+
+    <!-- JavaScript dùng chung -->
+    <script src="{% static 'core/js/cursor-effect.js' %}" defer></script>
+
+    <!-- JavaScript riêng của từng trang -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

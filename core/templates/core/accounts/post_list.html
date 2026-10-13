@@ -1,0 +1,251 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Bài viết của tôi | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container posts-dashboard">
+    <section class="auth-card posts-dashboard-card">
+
+        <!-- Header -->
+        <div class="profile-topline">
+            <span class="eyebrow">PERSONAL PORTFOLIO</span>
+            <span class="profile-status">
+                <span class="status-dot"></span>
+                MY WORKSPACE
+            </span>
+        </div>
+
+        <h1>
+            Bài viết của tôi<span class="heading-dot">.</span>
+        </h1>
+
+        <p class="description">
+            Quản lý dự án, chia sẻ sản phẩm và xây dựng portfolio cá nhân
+            của bạn tại IT MUCE.
+        </p>
+
+        <!-- Messages -->
+        {% if messages %}
+            <div class="posts-messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}" role="status">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Statistics -->
+        <div class="posts-stats">
+            <div class="posts-stat-card">
+                <span class="posts-stat-icon">▤</span>
+                <div>
+                    <span class="posts-stat-label">Tổng bài viết</span>
+                    <strong>{{ total_posts }}</strong>
+                </div>
+            </div>
+
+            <div class="posts-stat-card">
+                <span class="posts-stat-icon">◉</span>
+                <div>
+                    <span class="posts-stat-label">Đã công khai</span>
+                    <strong>{{ published_count }}</strong>
+                </div>
+            </div>
+
+            <div class="posts-stat-card">
+                <span class="posts-stat-icon">✎</span>
+                <div>
+                    <span class="posts-stat-label">Bản nháp</span>
+                    <strong>{{ draft_count }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="posts-toolbar">
+            <div class="posts-toolbar-info">
+                <h2>Portfolio của bạn</h2>
+                <p>Các dự án và bài viết bạn đã tạo.</p>
+            </div>
+
+            <a href="{% url 'member_post_create' %}"
+               class="posts-primary-button">
+                <span aria-hidden="true">+</span>
+                Tạo bài viết
+            </a>
+        </div>
+
+        <!-- Posts -->
+        {% if posts %}
+            <div class="posts-list">
+
+                {% for post in posts %}
+                    <!-- Mỗi dự án chỉ có MỘT article -->
+                    <article class="posts-item">
+
+                        <!-- Thumbnail -->
+                        <div class="posts-item-thumbnail">
+                            {% if post.thumbnail %}
+                                <img
+                                    src="{{ post.thumbnail.url }}"
+                                    alt="{{ post.title }}"
+                                    loading="lazy"
+                                >
+                            {% else %}
+                                <div class="posts-thumbnail-placeholder">
+                                    <span>IT</span>
+                                    <small>PROJECT</small>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Content -->
+                        <div class="posts-item-content">
+
+                            <!-- Status + Date -->
+                            <div class="posts-item-topline">
+                                {% if post.status == "published" %}
+                                    <span class="posts-status published">
+                                        <span></span>
+                                        Đã công khai
+                                    </span>
+                                {% else %}
+                                    <span class="posts-status draft">
+                                        <span></span>
+                                        Bản nháp
+                                    </span>
+                                {% endif %}
+
+                                <span class="posts-item-date">
+                                    {{ post.created_at|date:"d/m/Y" }}
+                                </span>
+                            </div>
+
+                            <!-- Title -->
+                            <h3 class="posts-item-title">
+                                {{ post.title }}
+                            </h3>
+
+                            <!-- Description -->
+                            <p class="posts-item-description">
+                                {{ post.description|truncatewords:35 }}
+                            </p>
+
+                            <!-- External links -->
+                            <div class="posts-external-links">
+                                {% if post.github_url %}
+                                    <a
+                                        href="{{ post.github_url }}"
+                                        class="posts-github-link"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <span>⌘</span>
+                                        Xem source code
+                                        <span aria-hidden="true">↗</span>
+                                    </a>
+                                {% endif %}
+
+                                {% if post.demo_url %}
+                                    <a
+                                        href="{{ post.demo_url }}"
+                                        class="posts-github-link"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Xem bản demo ↗
+                                    </a>
+                                {% endif %}
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="posts-item-actions">
+
+                                <a
+                                    href="{% url 'member_post_edit' post.pk %}"
+                                    class="posts-edit-button"
+                                >
+                                    <span aria-hidden="true"></span>
+                                    Chỉnh sửa
+                                </a>
+
+                                {% if post.status == "draft" %}
+                                    <form
+                                        method="post"
+                                        action="{% url 'member_post_publish' post.pk %}"
+                                    >
+                                        {% csrf_token %}
+                                        <button
+                                            type="submit"
+                                            class="posts-publish-button"
+                                        >
+                                            Đăng công khai ↗
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <a
+                                        href="{% url 'public_member_profile' username=request.user.username %}"
+                                        class="posts-view-button"
+                                    >
+                                        Xem trên profile ↗
+                                    </a>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+
+            </div>
+        {% else %}
+
+            <!-- Empty state -->
+            <div class="posts-empty-state">
+                <div class="posts-empty-icon">
+                    <span>＋</span>
+                </div>
+
+                <h2>Portfolio của bạn đang trống</h2>
+                <p>
+                    Bạn chưa có bài viết nào. Hãy bắt đầu bằng cách giới thiệu
+                    một dự án, sản phẩm hoặc điều bạn đang học.
+                </p>
+
+                <a
+                    href="{% url 'member_post_create' %}"
+                    class="posts-primary-button"
+                >
+                    + Tạo bài viết đầu tiên
+                </a>
+            </div>
+
+        {% endif %}
+
+        <!-- Footer navigation -->
+        <div class="posts-footer-actions">
+            <a href="{% url 'profile' %}" class="back-home">
+                <span aria-hidden="true">←</span>
+                Quay về hồ sơ
+            </a>
+
+            <a
+                href="{% url 'public_member_profile' username=request.user.username %}"
+                class="back-home"
+            >
+                Xem profile công khai ↗
+            </a>
+        </div>
+
+    </section>
+
+    <p class="auth-footer">LEARN · CREATE · COLLABORATE</p>
+</div>
+{% endblock %}

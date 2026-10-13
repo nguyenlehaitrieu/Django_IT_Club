@@ -1,0 +1,242 @@
+
+{% load static %}
+
+<nav id="mainNav" class="club-navbar">
+    <!-- LOGO -->
+    <a href="{% url 'home' %}"
+       class="nav-logo"
+       aria-label="IT MUCE Club - Trang chủ">
+
+        <span class="logo-frame">
+            <img
+                src="{% static 'core/images/logo.png' %}"
+                alt="Logo IT MUCE Club"
+                class="club-logo"
+            >
+        </span>
+
+        <span class="logo-text">
+            <strong>IT MUCE</strong>
+            <small>TECH COMMUNITY</small>
+        </span>
+    </a>
+
+    <!-- DESKTOP NAVIGATION -->
+    <div class="nav-links">
+
+        <a href="{% url 'announcement_list' %}">
+            Thông báo
+        </a>
+
+        <a href="{% url 'forum_list' %}">
+            Forum
+        </a>
+
+        
+        {% if can_moderate_forum_nav %}
+            <a href="{% url 'forum_moderation_queue' %}" class="nav-link">
+                Kiểm duyệt Forum
+                {% if forum_pending_count > 0 %}
+                    <span class="forum-pending-badge">
+                        {{ forum_pending_count }}
+                    </span>
+                {% endif %}
+            </a>
+        {% endif %}
+
+
+
+    </div>
+
+    <!-- DESKTOP ACTIONS -->
+    <div class="nav-cta">
+
+        <a href="{% url 'home' %}#dashboard"
+           class="nav-project-link">
+            <span class="status-dot"></span>
+            Dự án sinh viên
+        </a>
+
+        {% if user.is_authenticated %}
+
+            <div class="nav-user">
+
+                <!-- USER AVATAR -->
+                <a href="{% url 'profile' %}"
+                   class="user-avatar"
+                   aria-label="Xem hồ sơ cá nhân">
+
+                    {% if user.member_profile.avatar %}
+                        <img
+                            src="{{ user.member_profile.avatar.url }}"
+                            alt="Avatar"
+                            class="user-avatar-image"
+                        >
+                    {% else %}
+                        {{ user.username|first|upper }}
+                    {% endif %}
+                </a>
+
+                <!-- USER INFORMATION -->
+                <span class="user-info">
+                    <strong>{{ user.username }}</strong>
+
+                    <small>
+                        {% if user.is_superuser %}
+                            Administrator
+                        {% elif user.groups.all %}
+                            {% if user.groups.all.0.name == "Admin" %}
+                                Administrator
+                            {% elif user.groups.all.0.name == "Editor" %}
+                                Editor
+                            {% else %}
+                                Member
+                            {% endif %}
+                        {% else %}
+                            Member
+                        {% endif %}
+                    </small>
+                </span>
+
+                <a href="{% url 'profile' %}"
+                   class="nav-login-btn">
+                    Hồ sơ ↗
+                </a>
+
+                <a href="{% url 'developer_space' %}"
+                   class="nav-link nav-feature-link">
+                    ✦ Developer Space
+                </a>
+
+                {% if user.is_superuser or user.groups.all.0.name == "Admin" %}
+                    <a href="{% url 'admin_dashboard' %}"
+                       class="nav-link nav-feature-link">
+                        ⚙ Admin Dashboard
+                    </a>
+                {% endif %}
+
+                <!-- LOGOUT -->
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+
+                    <button type="submit" class="nav-logout-btn">
+                        Đăng xuất
+                    </button>
+                </form>
+
+            </div>
+
+        {% else %}
+
+            <a href="{% url 'login' %}" class="nav-login-btn">
+                Đăng nhập ↗
+            </a>
+
+            <a href="{% url 'register' %}"
+               class="btn-primary nav-join-btn">
+                Tham gia CLB ↗
+            </a>
+
+        {% endif %}
+    </div>
+
+    <!-- MOBILE MENU BUTTON -->
+    <button
+        class="hamburger"
+        id="hamburger"
+        type="button"
+        aria-label="Mở menu"
+        aria-expanded="false"
+        aria-controls="mobileMenu">
+
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+</nav>
+
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu"
+     id="mobileMenu"
+     aria-hidden="true">
+
+    <a href="{% url 'home' %}#features">
+        Lĩnh vực <span>01</span>
+    </a>
+
+    <a href="{% url 'home' %}#dashboard">
+        Dự án <span>02</span>
+    </a>
+
+    <a href="{% url 'home' %}#activities">
+        Hoạt động <span>03</span>
+    </a>
+
+    <a href="{% url 'home' %}#security">
+        Về CLB <span>04</span>
+    </a>
+
+    <a href="{% url 'announcement_list' %}">
+        Thông báo <span>05</span>
+    </a>
+
+    <a href="{% url 'forum_list' %}">
+        Forum <span>06</span>
+    </a>
+
+    <a href="{% url 'home' %}#faq">
+        FAQ <span>07</span>
+    </a>
+
+
+    <!-- MOBILE AUTHENTICATION -->
+    <div class="mobile-auth">
+
+        {% if user.is_authenticated %}
+
+            <p class="mobile-user-name">
+                Xin chào, <strong>{{ user.username }}</strong>
+            </p>
+
+            <a href="{% url 'profile' %}"
+               class="mobile-auth-link">
+                Hồ sơ cá nhân
+            </a>
+
+            <a href="{% url 'developer_space' %}"
+               class="mobile-auth-link">
+                Developer Space
+            </a>
+
+            {% if user.is_superuser or user.groups.all.0.name == "Admin" %}
+                <a href="{% url 'admin_dashboard' %}"
+                   class="mobile-auth-link">
+                    Admin Dashboard
+                </a>
+            {% endif %}
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+
+                <button type="submit" class="btn-primary">
+                    Đăng xuất
+                </button>
+            </form>
+
+        {% else %}
+
+            <a href="{% url 'login' %}"
+               class="nav-login-btn">
+                Đăng nhập
+            </a>
+
+            <a href="{% url 'register' %}"
+               class="btn-primary">
+                Tham gia CLB ↗
+            </a>
+
+        {% endif %}
+
+    </div>
+</div>

@@ -1,0 +1,127 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ announcement.title }} | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/announcements.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="announcement-page">
+
+    <article class="announcement-shell announcement-detail">
+
+        <!-- Back -->
+        <a href="{% url 'announcement_list' %}"
+           class="announcement-back">
+            <span aria-hidden="true">←</span>
+            Tất cả thông báo
+        </a>
+
+        <!-- Header -->
+        <header class="announcement-detail-header">
+
+            <div class="announcement-card-top">
+                <span class="announcement-priority {{ announcement.priority }}">
+                    <span class="announcement-priority-dot"></span>
+
+                    {% if announcement.priority == "urgent" %}
+                        KHẨN CẤP
+                    {% elif announcement.priority == "important" %}
+                        QUAN TRỌNG
+                    {% else %}
+                        THÔNG BÁO
+                    {% endif %}
+                </span>
+
+                <time datetime="{{ announcement.published_at|date:'c' }}">
+                    {{ announcement.published_at|date:"d/m/Y · H:i" }}
+                </time>
+            </div>
+
+            <h1>{{ announcement.title }}</h1>
+
+            {% if announcement.summary %}
+                <p class="announcement-detail-summary">
+                    {{ announcement.summary }}
+                </p>
+            {% endif %}
+
+        </header>
+
+        <!-- Content -->
+        
+        <div class="announcement-detail-body">{{ announcement.content }}</div>
+
+        {% if announcement.image %}
+            <figure class="announcement-media">
+                <img
+                    src="{{ announcement.image.url }}"
+                    alt="Ảnh đính kèm: {{ announcement.title }}"
+                    loading="lazy"
+                >
+            </figure>
+        {% endif %}
+
+        {% if announcement.video %}
+            <div class="announcement-media">
+                <video controls preload="metadata">
+                    <source src="{{ announcement.video.url }}">
+                    Trình duyệt của bạn không hỗ trợ phát video.
+                </video>
+            </div>
+        {% endif %}
+
+
+        <!-- Author -->
+        <div class="announcement-detail-meta">
+            <span>Đăng bởi</span>
+
+            <strong>
+                {% if announcement.author %}
+                    {{ announcement.author.username }}
+                {% else %}
+                    Ban quản trị IT MUCE
+                {% endif %}
+            </strong>
+        </div>
+
+        <!-- Management actions -->
+        {% if can_manage_announcements %}
+            <div class="announcement-detail-actions">
+
+                <a href="{% url 'announcement_edit' announcement.pk %}"
+                   class="announcement-button announcement-button-primary">
+                    ✎ Chỉnh sửa
+                </a>
+
+                <form method="post"
+                      action="{% url 'announcement_delete' announcement.pk %}"
+                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa thông báo này?');">
+                    {% csrf_token %}
+
+                    <button type="submit"
+                            class="announcement-button announcement-button-danger">
+                        Xóa thông báo
+                    </button>
+                </form>
+
+            </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer class="announcement-footer">
+            <a href="{% url 'announcement_list' %}">
+                <span aria-hidden="true">←</span>
+                Quay lại danh sách
+            </a>
+
+            <span>IT MUCE COMMUNITY</span>
+        </footer>
+
+    </article>
+
+</div>
+{% endblock %}

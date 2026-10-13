@@ -1,0 +1,427 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load forum_extras %}
+{% block title %}{{ topic.title }} | IT MUCE Forum{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/forum.css' %}">
+{% endblock %}
+{% block content %}
+<section class="forum-page">
+    <div class="forum-container">
+        <a href="{% url 'forum_list' %}" class="forum-back-link">
+            ← Quay lại diễn đàn
+        </a>
+        <!-- THÔNG TIN CHỦ ĐỀ -->
+        <article class="forum-detail-card">
+            <div class="forum-topic-meta">
+                <span class="forum-category">
+                    {{ topic.get_category_display }}
+                </span>
+                <span>{{ topic.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            <h1 class="forum-detail-title">{{ topic.title }}</h1>
+            <!-- AVATAR TÁC GIẢ -->
+            <div class="forum-detail-author">
+                <div class="forum-topic-avatar">
+                    {% if topic.author.member_profile.avatar %}
+                        <img
+                            src="{{ topic.author.member_profile.avatar.url }}"
+                            alt="Avatar của {{ topic.author.username }}"
+                            loading="lazy"
+                        >
+                    {% else %}
+                        <span>{{ topic.author.username|first|upper }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <strong>{{ topic.author.username }}</strong>
+                    <p>Thành viên IT MUCE</p>
+                </div>
+            </div>
+            <!-- NỘI DUNG CHỦ ĐỀ -->
+             
+
+            <div class="forum-detail-content">{{ topic.content }}</div>
+            <!-- ẢNH ĐÍNH KÈM BÀI ĐĂNG -->
+            {% if topic.images.all %}
+                <div class="forum-detail-images">
+                    {% for topic_image in topic.images.all %}
+                        {% if topic_image.image %}
+                            <a href="{{ topic_image.image.url }}" target="_blank" rel="noopener noreferrer" class="forum-detail-image-link">
+                                <img src="{{ topic_image.image.url }}" alt="Ảnh đính kèm bài viết {{ topic.title }}" loading="lazy">
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <!-- VIDEO -->
+
+            {% if video_embed_url %}
+                <div class="forum-video-wrapper">
+                    <iframe
+                        src="{{ video_embed_url }}"
+                        title="Video minh họa: {{ topic.title }}"
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerpolicy="strict-origin-when-cross-origin"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            {% endif %}
+            <!-- THÍCH VÀ ĐẾM BÌNH LUẬN -->
+            <div class="forum-detail-actions">
+                {% if user.is_authenticated %}
+                    <form
+                        method="post"
+                        action="{% url 'forum_like' topic.pk %}"
+                    >
+                        {% csrf_token %}
+                        <button
+                            type="submit"
+                            class="forum-action-btn"
+                            {% if liked %}disabled{% endif %}
+                        >
+                            {% if liked %}
+                                ♥ Đã thích
+                            {% else %}
+                                ♡ Thích
+                            {% endif %}
+                            · {{ topic.like_count }}
+                        </button>
+                    </form>
+                {% else %}
+                    <a
+                        class="forum-action-btn"
+                        href="{% url 'login' %}?next={{ request.path|urlencode }}"
+                    >
+                        ♡ Thích · {{ topic.like_count }}
+                    </a>
+                {% endif %}
+                <span class="forum-action-count">
+                    ◷ {{ topic.comment_count }} bình luận
+                </span>
+            </div>
+        </article>
+        <!-- BÁO CÁO CHỦ ĐỀ -->
+        {% if user.is_authenticated and user.id != topic.author_id %}
+            <details class="forum-report-panel">
+                <summary>⚑ Báo cáo chủ đề này</summary>
+                <form
+                    method="post"
+                    action="{% url 'forum_report' topic.pk %}"
+                >
+                    {% csrf_token %}
+                    <label for="report-reason">Lý do báo cáo</label>
+                    <select id="report-reason" name="reason" required>
+                        <option value="spam">Spam hoặc quảng cáo</option>
+                        <option value="harassment">Công kích hoặc quấy rối</option>
+                        <option value="misinformation">Thông tin sai lệch</option>
+                        <option value="inappropriate">Nội dung không phù hợp</option>
+                        <option value="malicious_link">Liên kết đáng ngờ</option>
+                        <option value="other">Lý do khác</option>
+                    </select>
+                    <label for="report-details">
+                        Mô tả thêm (không bắt buộc)
+                    </label>
+                    <textarea
+                        id="report-details"
+                        name="details"
+                        maxlength="500"
+                        rows="3"
+                    ></textarea>
+                    <button type="submit" class="forum-secondary-btn">
+                        Gửi báo cáo
+                    </button>
+                </form>
+            </details>
+        {% endif %}
+        <!-- KHU VỰC BÌNH LUẬN -->
+        <section class="forum-comments-section" id="comment-section">
+            <div class="forum-section-heading">
+                <div>
+                    <h2>Thảo luận</h2>
+                    <p>Chia sẻ ý kiến một cách văn minh nhé!</p>
+                </div>
+                <span class="forum-topic-count">
+                    {{ topic.comment_count }} bình luận
+                </span>
+            </div>
+            <!-- FORM VIẾT BÌNH LUẬN -->
+            {% if user.is_authenticated %}
+                <form
+                    method="post"
+                    action="{% url 'forum_comment' topic.pk %}"
+                    class="forum-comment-form"
+                >
+                    {% csrf_token %}
+                    <input
+                    type="hidden"
+                    name="parent_id"
+                    id="comment-parent-id"
+                    value=""
+                    >
+                    <label for="comment-content">Viết bình luận</label>
+                    <textarea
+                        id="comment-content"
+                        name="content"
+                        rows="4"
+                        maxlength="5000"
+                        required
+                        placeholder="Bạn nghĩ gì về chủ đề này?"
+                    ></textarea>
+                    <!-- THANH CÔNG CỤ -->
+                    <div class="forum-reaction-toolbar">
+                        <button
+                            type="button"
+                            class="forum-reaction-toggle"
+                            data-panel="forumEmojiPanel"
+                            aria-expanded="false"
+                            aria-controls="forumEmojiPanel"
+                        >
+                            😊 Emoji
+                        </button>
+                        <button
+                            type="button"
+                            class="forum-reaction-toggle"
+                            data-panel="forumStickerPanel"
+                            aria-expanded="false"
+                            aria-controls="forumStickerPanel"
+                        >
+                            🖼️ Sticker
+                        </button>
+                    </div>
+                    <!-- BẢNG EMOJI -->
+                    <div
+                        id="forumEmojiPanel"
+                        class="forum-reaction-panel"
+                        hidden
+                    >
+                        <div class="forum-emoji-group">
+                            <strong>Cảm xúc</strong>
+                            <div class="forum-emoji-grid">
+                                <button type="button" class="forum-emoji-btn" data-emoji="😀" aria-label="Vui vẻ">😀</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😂" aria-label="Cười lớn">😂</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🥹" aria-label="Xúc động">🥹</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😍" aria-label="Yêu thích">😍</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😭" aria-label="Khóc">😭</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😎" aria-label="Ngầu">😎</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🤔" aria-label="Suy nghĩ">🤔</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😅" aria-label="Ngại ngùng">😅</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🥳" aria-label="Ăn mừng">🥳</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😴" aria-label="Buồn ngủ">😴</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="😡" aria-label="Tức giận">😡</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="❤️" aria-label="Trái tim">❤️</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🙏" aria-label="Cảm ơn">🙏</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="👏" aria-label="Vỗ tay">👏</button>
+                            </div>
+                        </div>
+                        <div class="forum-emoji-group">
+                            <strong>Công nghệ</strong>
+                            <div class="forum-emoji-grid">
+                                <button type="button" class="forum-emoji-btn" data-emoji="💻" aria-label="Laptop">💻</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="⌨️" aria-label="Bàn phím">⌨️</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🖥️" aria-label="Máy tính">🖥️</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🤖" aria-label="Robot">🤖</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🐛" aria-label="Bug">🐛</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🚀" aria-label="Tên lửa">🚀</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="⚙️" aria-label="Cài đặt">⚙️</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🔥" aria-label="Nổi bật">🔥</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="💡" aria-label="Ý tưởng">💡</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="✅" aria-label="Hoàn thành">✅</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="🎯" aria-label="Mục tiêu">🎯</button>
+                                <button type="button" class="forum-emoji-btn" data-emoji="📚" aria-label="Học tập">📚</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- BẢNG STICKER -->
+                    <div
+                        id="forumStickerPanel"
+                        class="forum-reaction-panel"
+                        hidden
+                    >
+                        <div class="forum-sticker-grid">
+                            <button
+                                type="button"
+                                class="forum-sticker-btn"
+                                data-sticker="thanks"
+                            >
+                                <img
+                                    src="{% static 'core/images/forum-stickers/thanks.webp' %}"
+                                    alt="Cảm ơn"
+                                    loading="lazy"
+                                >
+                                <span>Cảm ơn</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="forum-sticker-btn"
+                                data-sticker="coding"
+                            >
+                                <img
+                                    src="{% static 'core/images/forum-stickers/coding.webp' %}"
+                                    alt="Đang code"
+                                    loading="lazy"
+                                >
+                                <span>Đang code</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="forum-sticker-btn"
+                                data-sticker="celebrate"
+                            >
+                                <img
+                                    src="{% static 'core/images/forum-stickers/celebrate.webp' %}"
+                                    alt="Ăn mừng"
+                                    loading="lazy"
+                                >
+                                <span>Ăn mừng</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="forum-sticker-btn"
+                                data-sticker="thinking"
+                            >
+                                <img
+                                    src="{% static 'core/images/forum-stickers/thinking.webp' %}"
+                                    alt="Đang suy nghĩ"
+                                    loading="lazy"
+                                >
+                                <span>Đang suy nghĩ</span>
+                            </button>
+                            <button
+                                type="button"
+                                class="forum-sticker-btn"
+                                data-sticker="love"
+                            >
+                                <img
+                                    src="{% static 'core/images/forum-stickers/love.webp' %}"
+                                    alt="Yêu thích"
+                                    loading="lazy"
+                                >
+                                <span>Yêu thích</span>
+                            </button>
+                        </div>
+                        <small>
+                            Chọn sticker để chèn vào bình luận.
+                        </small>
+                    </div>
+                    <!-- NÚT GỬI -->
+                    <div class="forum-comment-form-footer">
+                        <small>Bình luận tối đa 5000 ký tự.</small>
+                        <button type="submit" class="forum-primary-btn">
+                            Gửi bình luận
+                        </button>
+                    </div>
+                </form>
+            {% else %}
+                <div class="forum-login-prompt">
+                    Bạn cần
+                    <a href="{% url 'login' %}?next={{ request.path|urlencode }}">
+                        đăng nhập
+                    </a>
+                    để tham gia thảo luận.
+                </div>
+            {% endif %}
+
+
+
+           
+            <!-- DANH SÁCH BÌNH LUẬN -->
+            <div class="forum-comment-list">
+                {% for comment in comments %}
+                    <article class="forum-comment-card" id="comment-{{ comment.pk }}">
+                        <div class="forum-topic-avatar">
+                            {% if comment.author.member_profile.avatar %}
+                                <img src="{{ comment.author.member_profile.avatar.url }}" alt="Avatar của {{ comment.author.username }}" loading="lazy">
+                            {% else %}
+                                <span>{{ comment.author.username|first|upper }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="forum-comment-body">
+                            <div class="forum-comment-meta">
+                                <strong>{{ comment.author.username }}</strong>
+                                <span>{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            {% if comment.is_deleted %}
+                                <div class="forum-comment-content forum-comment-deleted"><em>Bình luận này đã bị xóa.</em></div>
+                            {% else %}
+                                <div class="forum-comment-content">{{ comment.content|forum_comment_content }}</div>
+                                {% if user.is_authenticated %}
+                                    <button type="button" class="forum-reply-btn" data-comment-id="{{ comment.pk }}" data-username="{{ comment.author.username }}">↩ Trả lời</button>
+                                {% endif %}
+                            {% endif %}
+                            {% if user.is_authenticated and user.pk == comment.author_id and not comment.is_deleted %}
+                                <form method="post" action="{% url 'forum_delete_comment' topic.pk comment.pk %}" class="forum-delete-comment-form" onsubmit="return confirm('Bạn có chắc muốn xóa bình luận này không?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="forum-delete-comment-btn">🗑 Xóa</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                        <div class="forum-comment-replies">
+                            {% include "core/forum/_comment_replies.html" with replies=comment.replies.all %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="forum-empty">
+                        <h3>Chưa có bình luận</h3>
+                        <p>Hãy là người đầu tiên chia sẻ góc nhìn của bạn.</p>
+                    </div>
+                {% endfor %}
+
+
+                {% if comments_page.paginator.num_pages > 1 %}
+                <nav class="forum-pagination" aria-label="Phân trang bình luận">
+                    {% if comments_page.has_previous %}
+                        <a href="?comment_page={{ comments_page.previous_page_number }}#comment-section">← Trước</a>
+                    {% endif %}
+                    {% for page_num in comments_page.paginator.page_range %}
+                        {% if page_num == comments_page.number %}
+                            <span class="active" aria-current="page">{{ page_num }}</span>
+                        {% else %}
+                            <a href="?comment_page={{ page_num }}#comment-section">{{ page_num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if comments_page.has_next %}
+                        <a href="?comment_page={{ comments_page.next_page_number }}#comment-section">Sau →</a>
+                    {% endif %}
+                </nav>
+                {% endif %}
+
+
+            </div>
+
+
+
+        <!-- KIỂM DUYỆT -->
+        {% if can_moderate_forum %}
+            <section class="forum-moderation-panel">
+                <h2>Kiểm duyệt chủ đề</h2>
+                <form
+                    method="post"
+                    action="{% url 'forum_moderate_topic' topic.pk %}"
+                >
+                    {% csrf_token %}
+                    <label for="moderation-action">Hành động</label>
+                    <select name="action" id="moderation-action" required>
+                        <option value="approve">Duyệt chủ đề</option>
+                        <option value="hide">Ẩn chủ đề</option>
+                        <option value="reject">Từ chối chủ đề</option>
+                        <option value="restore">Khôi phục chủ đề</option>
+                    </select>
+                    <label for="moderation-note">Ghi chú</label>
+                    <input
+                        id="moderation-note"
+                        name="note"
+                        maxlength="500"
+                    >
+                    <button type="submit" class="forum-secondary-btn">
+                        Xác nhận
+                    </button>
+                </form>
+            </section>
+        {% endif %}
+    </div>
+</section>
+<script src="{% static 'core/js/forum-reactions.js' %}" defer></script>
+<script src="{% static 'core/js/forum-replies.js' %}" defer></script>
+{% endblock %}

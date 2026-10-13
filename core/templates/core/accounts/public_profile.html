@@ -1,0 +1,394 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}{{ member.username }} | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+<link rel="stylesheet" href="{% static 'core/css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-container public-profile-container">
+
+    <!-- Brand -->
+    <a href="{% url 'home' %}" class="brand public-profile-brand">
+        <span class="brand-mark">IT</span>
+        <span>IT MUCE</span>
+    </a>
+
+    <section class="auth-card profile-card">
+
+        <!-- Header -->
+        <div class="profile-topline">
+            <span class="eyebrow">MEMBER AREA</span>
+
+            <span class="profile-status">
+                <span class="status-dot"></span>
+                DEVELOPER PROFILE
+            </span>
+        </div>
+
+        <h1>
+            Hồ sơ thành viên<span class="heading-dot">.</span>
+        </h1>
+
+        <p class="description">
+            Khám phá hành trình học tập, kỹ năng và sở thích công nghệ
+            của thành viên IT MUCE.
+        </p>
+
+        <!-- Tổng quan hồ sơ -->
+        <section class="profile-hero">
+
+            <div class="profile-avatar-column">
+                <div class="profile-avatar" id="avatarPreview">
+
+                    {% if profile.avatar %}
+                        <img
+                            src="{{ profile.avatar.url }}"
+                            alt="Ảnh đại diện của {{ member.username }}"
+                        >
+                    {% else %}
+                        <span>{{ member.username|first|upper }}</span>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="profile-identity">
+
+                <span class="identity-label">YOUR DEVELOPER ID</span>
+
+                <strong class="profile-display-name">
+                    {% if member.get_full_name %}
+                        {{ member.get_full_name }}
+                    {% else %}
+                        {{ member.username }}
+                    {% endif %}
+                </strong>
+
+                <span class="profile-username">
+                    @{{ member.username }}
+                </span>
+
+                <span class="profile-role">
+                    {{ profile_role }}
+                </span>
+
+                {% if profile.bio %}
+                    <p class="profile-short-bio">
+                        {{ profile.bio }}
+                    </p>
+                {% else %}
+                    <p class="profile-short-bio empty-bio">
+                        Thành viên chưa cập nhật phần giới thiệu.
+                    </p>
+                {% endif %}
+
+                <div class="profile-social-links">
+
+                    {% if profile.github_url %}
+                        <a
+                            href="{{ profile.github_url }}"
+                            class="profile-social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <span aria-hidden="true">⌘</span>
+                            GitHub
+                            <span aria-hidden="true">↗</span>
+                        </a>
+                    {% endif %}
+
+                    {% if profile.portfolio_url %}
+                        <a
+                            href="{{ profile.portfolio_url }}"
+                            class="profile-social-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <span aria-hidden="true">↗</span>
+                            Portfolio
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <div class="profile-hero-decoration" aria-hidden="true">
+                <span>IT</span>
+                <span>MUCE</span>
+            </div>
+
+        </section>
+
+        <!-- 01: Thông tin thành viên -->
+        <section class="profile-form-section">
+
+            <div class="profile-section-heading">
+                <span class="section-number">01</span>
+
+                <div>
+                    <h2>Developer identity</h2>
+                    <p>Thông tin và định hướng của thành viên.</p>
+                </div>
+            </div>
+
+            <div class="profile-fields-grid">
+
+                <div class="profile-field">
+                    <label>Họ và tên</label>
+                    <div>
+                        {% if member.get_full_name %}
+                            {{ member.get_full_name }}
+                        {% else %}
+                            Chưa cập nhật
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label>Vai trò</label>
+                    <div>{{ profile_role }}</div>
+                </div>
+
+                <div class="profile-field">
+                    <label>Chuyên ngành quan tâm</label>
+                    <div>
+                        {% if profile.interests %}
+                            {{ profile.get_interests_display }}
+                        {% else %}
+                            Chưa cập nhật
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="profile-field">
+                    <label>Kỹ năng</label>
+                    <div>
+                        {% if profile.skills %}
+                            {{ profile.skills|linebreaksbr }}
+                        {% else %}
+                            Chưa cập nhật
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- 02: Hành trình thành viên -->
+        <section class="profile-form-section">
+
+            <div class="profile-section-heading">
+                <span class="section-number">02</span>
+
+                <div>
+                    <h2>Hành trình thành viên</h2>
+                    <p>
+                        Những thông tin ghi dấu quá trình tham gia cộng đồng.
+                    </p>
+                </div>
+            </div>
+
+            <div class="profile-fields-grid">
+
+                <div class="profile-field">
+                    <label>Experience Points</label>
+                    <div>{{ profile.xp }} XP</div>
+                </div>
+
+                <div class="profile-field">
+                    <label>Giao diện đang sử dụng</label>
+                    <div>
+                        {% if profile.active_theme %}
+                            {{ profile.active_theme.name }}
+                        {% else %}
+                            Cyber Blue
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+            {% with achievements=profile.achievements.all %}
+                {% if achievements %}
+
+                    <div class="profile-section-heading">
+                        <span class="section-number">03</span>
+
+                        <div>
+                            <h2>Thành tích</h2>
+                            <p>Các cột mốc thành viên đã đạt được.</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-fields-grid">
+
+                        {% for member_achievement in achievements %}
+                            <div class="profile-field">
+
+                                <label>
+                                    {{ member_achievement.achievement.name }}
+                                </label>
+
+                                <div>
+                                    {{ member_achievement.achievement.description }}
+                                </div>
+
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+            {% endwith %}
+
+        </section>
+
+        <!-- 03: Personal Portfolio -->
+        <section class="profile-form-section member-posts-section">
+
+            <div class="member-posts-heading">
+
+                <div class="member-posts-heading-text">
+                    <span class="eyebrow">PERSONAL PORTFOLIO</span>
+
+                    <h2>
+                        Dự án &amp; Bài viết
+                        <span class="heading-dot">.</span>
+                    </h2>
+
+                    <p class="description">
+                        Những dự án và sản phẩm được chia sẻ bởi
+                        {{ member.username }}.
+                    </p>
+                </div>
+
+                {% if is_owner %}
+                    <a
+                        href="{% url 'member_post_list' %}"
+                        class="member-post-manage"
+                    >
+                        Quản lý bài viết ↗
+                    </a>
+                {% endif %}
+
+            </div>
+
+            {% if posts %}
+
+                <div class="member-post-grid">
+
+                    {% for post in posts %}
+
+                        <article class="member-post-card">
+
+                            {% if post.thumbnail %}
+                                <div class="member-post-thumbnail">
+                                    <img
+                                        src="{{ post.thumbnail.url }}"
+                                        alt="{{ post.title }}"
+                                        loading="lazy"
+                                    >
+                                </div>
+                            {% endif %}
+
+                            <div class="member-post-body">
+
+                                <span class="member-post-date">
+                                    {{ post.created_at|date:"d/m/Y" }}
+                                </span>
+
+                                <h3 class="member-post-title">
+                                    {{ post.title }}
+                                </h3>
+
+                                <p class="member-post-description">
+                                    {{ post.description|truncatewords:35 }}
+                                </p>
+
+                                {% if post.github_url %}
+                                    <a
+                                        href="{{ post.github_url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="member-post-link"
+                                    >
+                                        GitHub
+                                        <span aria-hidden="true">↗</span>
+                                    </a>
+                                {% endif %}
+
+                            </div>
+
+                        </article>
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="member-post-empty">
+
+                    {% if is_owner %}
+
+                        <p>
+                            Bạn chưa có dự án công khai nào.
+                            Hãy chia sẻ sản phẩm đầu tiên của mình nhé!
+                        </p>
+
+                        <a
+                            href="{% url 'member_post_create' %}"
+                            class="member-post-create"
+                        >
+                            + Tạo bài viết đầu tiên
+                        </a>
+
+                    {% else %}
+
+                        <p>
+                            Thành viên này chưa có dự án công khai nào.
+                        </p>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
+
+        </section>
+
+        <!-- Điều hướng -->
+        <div class="profile-actions">
+
+            <a href="{% url 'home' %}" class="back-home">
+                <span aria-hidden="true">←</span>
+                Quay về trang chủ
+            </a>
+
+            {% if is_owner %}
+                <a
+                    href="{% url 'profile_edit' %}"
+                    class="profile-logout"
+                >
+                    Chỉnh sửa hồ sơ ↗
+                </a>
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <p class="auth-footer">
+        LEARN · CREATE · COLLABORATE
+    </p>
+
+</div>
+
+{% endblock %}

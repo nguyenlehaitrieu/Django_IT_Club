@@ -1,0 +1,464 @@
+/* =========================================================
+   IT MUCE — DEVELOPER SPACE
+   - Main page follows the currently equipped theme.
+   - Theme Store cards keep their own individual colors.
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--theme-bg, #080d18);
+}
+
+body.site-layout {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(
+            ellipse at top,
+            color-mix(in srgb, var(--theme-primary, #55b7ff) 16%, transparent),
+            transparent 52%
+        ),
+        var(--theme-bg, #080d18);
+    color: var(--theme-text, #eaf2ff);
+    font-family: "Segoe UI", Arial, sans-serif;
+    transition: background-color .25s ease, color .25s ease;
+}
+
+/* Main layout */
+.space-container {
+    width: min(1120px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 38px 0;
+    background: transparent;
+}
+
+.back-link,
+.back-home-link {
+    color: var(--theme-secondary, #a3dcff);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color .2s ease;
+}
+
+.back-link:hover,
+.back-home-link:hover {
+    color: var(--theme-primary, #55b7ff);
+}
+
+.space-header {
+    margin: 44px 0 30px;
+}
+
+.eyebrow {
+    color: var(--theme-primary, #55b7ff);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.space-header h1 {
+    margin: 12px 0;
+    color: var(--theme-text, #eaf2ff);
+    font-size: clamp(32px, 5vw, 48px);
+    letter-spacing: -1.5px;
+}
+
+.space-header h1 span {
+    color: var(--theme-primary, #55b7ff);
+}
+
+.space-header > p:last-child,
+.section-heading p {
+    color: var(--theme-text-muted, #91a4bf);
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* XP and current theme panels follow the active theme */
+.xp-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 26px;
+    border: 1px solid var(--theme-border, rgba(102, 163, 235, .22));
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--theme-surface, #0d1726) 92%, transparent);
+    color: var(--theme-text, #eaf2ff);
+}
+
+.xp-panel h2 {
+    margin: 8px 0;
+    color: var(--theme-primary, #8dccff);
+    font-size: 30px;
+}
+
+.xp-panel h2 span {
+    color: var(--theme-secondary, #a3dcff);
+}
+
+.xp-panel p {
+    color: var(--theme-text-muted, #93a7c1);
+    font-size: 12px;
+}
+
+.current-theme {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+
+.current-theme-label {
+    color: var(--theme-text-muted, #8398b5);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.current-theme strong {
+    color: var(--theme-secondary, #8dccff);
+}
+
+.theme-section {
+    margin-top: 44px;
+}
+
+.section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.section-heading h2 {
+    margin-bottom: 6px;
+    color: var(--theme-text, #eaf2ff);
+}
+
+.theme-count {
+    color: var(--theme-primary, #55b7ff);
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.theme-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 22px;
+}
+
+/* =========================================================
+   THEME STORE CARDS
+   IMPORTANT: card colors are intentionally independent from
+   html[data-theme]. Do not apply active theme tokens globally
+   to .theme-card or .theme-preview.
+   ========================================================= */
+
+.theme-card {
+    --card-accent: #55b7ff;
+    --card-secondary: #a3dcff;
+    --card-surface: #0d1726;
+    --card-border: rgba(85, 183, 255, .28);
+    --card-preview-start: #17385d;
+    --card-preview-end: #0d1726;
+
+    overflow: hidden;
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    background: var(--card-surface);
+    color: #edf4ff;
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.theme-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--card-accent);
+    box-shadow: 0 10px 28px color-mix(in srgb, var(--card-accent) 12%, transparent);
+}
+
+.theme-preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 150px;
+    padding: 18px;
+    background:
+        radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--card-accent) 24%, transparent), transparent 38%),
+        linear-gradient(135deg, var(--card-preview-start), var(--card-preview-end));
+    border-bottom: 1px solid var(--card-border);
+}
+
+.preview-symbol {
+    color: var(--card-secondary);
+    font-size: 30px;
+}
+
+.preview-bottom {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.preview-category {
+    color: rgba(255, 255, 255, .88);
+    font-size: 13px;
+}
+
+.preview-name {
+    color: var(--card-secondary);
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.theme-content {
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+}
+
+.theme-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.theme-content h3 {
+    margin: 0;
+    color: #f2f6ff;
+    font-size: 16px;
+}
+
+.theme-description,
+.theme-content > p {
+    min-height: 42px;
+    color: #a5b4ca;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.theme-status {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+.theme-status.active {
+    color: var(--card-secondary);
+    background: color-mix(in srgb, var(--card-accent) 12%, transparent);
+}
+
+.theme-status.unlocked {
+    color: #b9c8db;
+}
+
+.theme-status.locked {
+    color: #a5b4ca;
+}
+
+.theme-requirements {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 18px 0;
+    color: var(--card-secondary);
+    font-size: 12px;
+}
+
+.requirement-value {
+    color: var(--card-secondary);
+}
+
+.requirement-label {
+    margin-left: 4px;
+    color: #a5b4ca;
+}
+
+.theme-actions {
+    margin-top: auto;
+}
+
+.theme-actions form {
+    width: 100%;
+}
+
+.theme-button {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--card-accent);
+    border-radius: 9px;
+    background: color-mix(in srgb, var(--card-accent) 14%, var(--card-surface));
+    color: var(--card-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.theme-button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--card-accent) 26%, var(--card-surface));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--card-accent) 14%, transparent);
+}
+
+.theme-button:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.theme-button:disabled {
+    cursor: default;
+    opacity: .85;
+}
+
+.theme-button.current-button {
+    border-color: var(--card-border);
+    background: color-mix(in srgb, var(--card-accent) 10%, var(--card-surface));
+    color: var(--card-secondary);
+}
+
+/* =========================================================
+   SIX INDEPENDENT CARD PALETTES
+   These classes only style each card, not the page background.
+   ========================================================= */
+
+/* 1. Cyber Blue */
+.theme-card.theme-cyber_blue {
+    --card-accent: #55b7ff;
+    --card-secondary: #a3dcff;
+    --card-surface: #0d1726;
+    --card-border: rgba(85, 183, 255, .30);
+    --card-preview-start: #17385d;
+    --card-preview-end: #0b1425;
+}
+
+/* 2. Pixel Forest */
+.theme-card.theme-pixel_forest {
+    --card-accent: #8bd450;
+    --card-secondary: #b4ed7a;
+    --card-surface: #11251b;
+    --card-border: rgba(139, 212, 80, .30);
+    --card-preview-start: #164a35;
+    --card-preview-end: #0b1913;
+}
+
+/* 3. Void Realm */
+.theme-card.theme-void_realm {
+    --card-accent: #c084fc;
+    --card-secondary: #dfb5ff;
+    --card-surface: #1a1029;
+    --card-border: rgba(192, 132, 252, .32);
+    --card-preview-start: #432365;
+    --card-preview-end: #10091c;
+}
+
+/* 4. Crimson Eclipse */
+.theme-card.theme-crimson_eclipse {
+    --card-accent: #ff5268;
+    --card-secondary: #ff9aa8;
+    --card-surface: #251017;
+    --card-border: rgba(255, 82, 104, .34);
+    --card-preview-start: #4a1522;
+    --card-preview-end: #19090d;
+}
+
+/* 5. Neon Abyss — acid lime / dark olive */
+.theme-card.theme-neon_abyss {
+    --card-accent: #c6ff00;
+    --card-secondary: #e3ff70;
+    --card-surface: #171b0b;
+    --card-border: rgba(198, 255, 0, .30);
+    --card-preview-start: #353d12;
+    --card-preview-end: #0b0d08;
+}
+
+/* 6. Solar Flare */
+.theme-card.theme-solar_flare {
+    --card-accent: #f5b942;
+    --card-secondary: #ffdc83;
+    --card-surface: #261c0d;
+    --card-border: rgba(245, 185, 66, .34);
+    --card-preview-start: #593513;
+    --card-preview-end: #1a1208;
+}
+
+/* Empty state and messages follow the active page theme */
+.empty-themes {
+    grid-column: 1 / -1;
+    padding: 36px;
+    border: 1px dashed var(--theme-border, rgba(85, 183, 255, .3));
+    border-radius: 16px;
+    color: var(--theme-text, #edf4ff);
+    text-align: center;
+}
+
+.empty-themes > span {
+    color: var(--theme-primary, #55b7ff);
+    font-size: 30px;
+}
+
+.space-messages {
+    margin: 14px 0;
+}
+
+.space-message {
+    margin: 14px 0;
+    padding: 12px 15px;
+    border: 1px solid var(--theme-border, rgba(111, 186, 255, .25));
+    border-radius: 10px;
+    color: var(--theme-text, #b9dcff);
+    font-size: 13px;
+}
+
+.space-message.success {
+    color: #7ce2b5;
+}
+
+.space-message.warning,
+.space-message.error {
+    color: #ffbd9f;
+}
+
+.space-footer {
+    margin-top: 48px;
+    color: var(--theme-text-muted, #536984);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+/* Keep decorative canvas transparent so it cannot cover page colors */
+#techBackground {
+    background: transparent !important;
+}
+
+/* Responsive layout */
+@media (max-width: 800px) {
+    .theme-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 540px) {
+    .theme-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .xp-panel {
+        padding: 20px;
+    }
+
+    .theme-preview {
+        min-height: 130px;
+    }
+}

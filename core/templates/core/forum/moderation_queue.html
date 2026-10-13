@@ -1,0 +1,164 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Kiểm duyệt Forum | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/forum.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="forum-page">
+    <section class="forum-moderation">
+
+        <header class="forum-moderation-header">
+            <div>
+                <p class="forum-eyebrow">IT MUCE / COMMUNITY MANAGEMENT</p>
+                <h1>Kiểm duyệt <span>Forum.</span></h1>
+                <p>
+                    Xem xét các chủ đề đang chờ duyệt trước khi
+                    xuất hiện công khai trên diễn đàn.
+                </p>
+            </div>
+
+            <a href="{% url 'forum_list' %}" class="forum-button">
+                ← Quay lại Forum
+            </a>
+        </header>
+
+        {% if messages %}
+            <div class="forum-messages">
+                {% for message in messages %}
+                    <div class="forum-message {{ message.tags }}" role="status">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="forum-moderation-summary">
+            <div>
+                <span>ĐANG CHỜ DUYỆT</span>
+                <strong>{{ page_obj.paginator.count }}</strong>
+            </div>
+            <p>
+                Hãy kiểm tra nội dung và chọn hành động phù hợp
+                cho từng chủ đề.
+            </p>
+        </div>
+
+        {% if topics %}
+            <div class="forum-moderation-list">
+                {% for topic in topics %}
+                    <article class="forum-moderation-card">
+
+                        <div class="forum-moderation-card-top">
+                            <span class="forum-status-pending">
+                                ● Chờ duyệt
+                            </span>
+                            <time datetime="{{ topic.created_at|date:'c' }}">
+                                {{ topic.created_at|date:"d/m/Y H:i" }}
+                            </time>
+                        </div>
+
+                        <h2>{{ topic.title }}</h2>
+
+                        <div class="forum-topic-meta">
+                            <span>
+                                Người đăng:
+                                <strong>{{ topic.author.username }}</strong>
+                            </span>
+                            <span>
+                                Chuyên mục:
+                                {{ topic.get_category_display }}
+                            </span>
+                        </div>
+
+                        <div class="forum-moderation-content">
+                            {{ topic.content|linebreaks }}
+                        </div>
+
+                        <form
+                            method="post"
+                            action="{% url 'forum_moderate_topic' topic.pk %}"
+                            class="forum-moderation-form"
+                        >
+                            {% csrf_token %}
+
+                            <label for="note-{{ topic.pk }}">
+                                Ghi chú kiểm duyệt
+                            </label>
+
+                            <textarea
+                                id="note-{{ topic.pk }}"
+                                name="note"
+                                rows="2"
+                                maxlength="1000"
+                                placeholder="Lý do duyệt, từ chối hoặc ẩn bài..."
+                            ></textarea>
+
+                            <div class="forum-moderation-actions">
+                                <button
+                                    type="submit"
+                                    name="action"
+                                    value="approve"
+                                    class="forum-action-approve"
+                                >
+                                    ✓ Duyệt bài
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    name="action"
+                                    value="reject"
+                                    class="forum-action-reject"
+                                    onclick="return confirm('Bạn chắc chắn muốn từ chối chủ đề này?');"
+                                >
+                                    Từ chối
+                                </button>
+                            </div>
+                        </form>
+
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_other_pages %}
+                <nav class="forum-pagination" aria-label="Phân trang">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}">
+                            ← Trước
+                        </a>
+                    {% endif %}
+
+                    <span>
+                        Trang {{ page_obj.number }}
+                        / {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">
+                            Tiếp →
+                        </a>
+                    {% endif %}
+                </nav>
+            {% endif %}
+
+        {% else %}
+            <div class="forum-empty-state">
+                <div class="forum-empty-icon">✓</div>
+                <h2>Không có chủ đề chờ duyệt</h2>
+                <p>
+                    Tất cả chủ đề đang chờ đã được xử lý.
+                    Bạn có thể quay lại Forum để tiếp tục quản lý.
+                </p>
+                <a href="{% url 'forum_list' %}" class="forum-button">
+                    Quay lại Forum
+                </a>
+            </div>
+        {% endif %}
+
+    </section>
+</div>
+{% endblock %}

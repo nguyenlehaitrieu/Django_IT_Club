@@ -1,0 +1,91 @@
+{% load static %}
+<!-- DASHBOARD PREVIEW -->
+<section class="dashboard-section" id="dashboard">
+  <div class="dashboard-inner">
+    <div style="text-align:center">
+      <div class="section-tag">Live platform</div>
+      <h2 class="section-title">A place to turn ideas into projects</h2>
+      <p class="section-sub" style="max-width:500px;margin:0 auto">HTML / CSS / JS data, beautiful visualizations, and the controls you need to stay ahead.</p>
+    </div>
+    <div class="dashboard-preview">
+      <div class="dp-topbar">
+        <div class="dp-title">IT MUCE PROJECTS</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="dp-live"><div class="dp-live-dot"></div>Student projects</div>
+          <div class="dp-chart-period">
+            <button class="dp-period-btn active" onclick="switchPeriod(this,'7d')">7D</button>
+            <button class="dp-period-btn" onclick="switchPeriod(this,'1m')">1M</button>
+            <button class="dp-period-btn" onclick="switchPeriod(this,'3m')">3M</button>
+            <button class="dp-period-btn" onclick="switchPeriod(this,'1y')">1Y</button>
+          </div>
+        </div>
+      </div>
+      <div class="dp-body">
+        <div class="dp-chart-area">
+          <div class="dp-chart-head">
+            <div>
+              <div class="dp-chart-val" id="dpChartVal">IT MUCE</div>
+              <div class="dp-chart-change" id="dpChartChange">▲ +02 (4.72%) today</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:5px;height:160px;padding-top:12px">
+            <div style="flex:1;background:rgba(74,158,232,.15);border-radius:3px 3px 0 0;height:62%;border-top:2px solid var(--sky)"></div>
+            <div style="flex:1;background:rgba(74,158,232,.15);border-radius:3px 3px 0 0;height:70%;border-top:2px solid var(--sky)"></div>
+            <div style="flex:1;background:rgba(74,158,232,.15);border-radius:3px 3px 0 0;height:58%;border-top:2px solid var(--sky)"></div>
+            <div style="flex:1;background:rgba(74,158,232,.15);border-radius:3px 3px 0 0;height:80%;border-top:2px solid var(--sky)"></div>
+            <div style="flex:1;background:rgba(74,158,232,.15);border-radius:3px 3px 0 0;height:72%;border-top:2px solid var(--sky)"></div>
+            <div style="flex:1;background:rgba(74,158,232,.22);border-radius:3px 3px 0 0;height:88%;border-top:2px solid var(--sky2)"></div>
+            <div style="flex:1;background:rgba(74,158,232,.32);border-radius:3px 3px 0 0;height:100%;border-top:2px solid var(--sky2)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px">
+            <span style="font-size:11px;color:var(--text3)">Mon</span>
+            <span style="font-size:11px;color:var(--text3)">Tue</span>
+            <span style="font-size:11px;color:var(--text3)">Wed</span>
+            <span style="font-size:11px;color:var(--text3)">Thu</span>
+            <span style="font-size:11px;color:var(--text3)">Fri</span>
+            <span style="font-size:11px;color:var(--text3)">Sat</span>
+            <span style="font-size:11px;color:var(--sky)">Today</span>
+          </div>
+        </div>
+        <div class="dp-side">
+          <div class="dp-side-card">
+            <div class="dp-side-label">Cash flow</div>
+            <div class="dp-side-val" style="color:var(--green)">+03</div>
+            <div class="dp-side-change" style="color:var(--green)">Net positive this month</div>
+            <div class="dp-allocations">
+              <div class="dp-alloc-row">
+                <div class="dp-alloc-dot" style="background:var(--sky)"></div>
+                <div class="dp-alloc-name">Inbound</div>
+                <div class="dp-alloc-bar-wrap"><div class="dp-alloc-bar" style="width:78%;background:var(--sky)"></div></div>
+                <div class="dp-alloc-pct">78%</div>
+              </div>
+              <div class="dp-alloc-row">
+                <div class="dp-alloc-dot" style="background:#8888F8"></div>
+                <div class="dp-alloc-name">Outbound</div>
+                <div class="dp-alloc-bar-wrap"><div class="dp-alloc-bar" style="width:22%;background:#8888F8"></div></div>
+                <div class="dp-alloc-pct">22%</div>
+              </div>
+            </div>
+          </div>
+          <div class="dp-side-card">
+            <div class="dp-side-label">Transactions</div>
+            <div class="dp-side-val">Ideas</div>
+            <div class="dp-side-change" style="color:var(--text3)">Build projects</div>
+            <div class="dp-allocations" style="margin-top:10px">
+              <div class="dp-alloc-row">
+                <div class="dp-alloc-dot" style="background:var(--green)"></div>
+                <div class="dp-alloc-name">Successful</div>
+                <div class="dp-alloc-pct" style="color:var(--green)">100%</div>
+              </div>
+              <div class="dp-alloc-row">
+                <div class="dp-alloc-dot" style="background:var(--red)"></div>
+                <div class="dp-alloc-name">Failed</div>
+                <div class="dp-alloc-pct" style="color:var(--red)">0.2%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

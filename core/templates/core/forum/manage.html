@@ -1,0 +1,194 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/forum.css' %}">
+{% endblock %}
+
+
+{% block title %}Quản lý Forum | IT MUCE{% endblock %}
+
+{% block content %}
+<section class="forum-page">
+    <div class="forum-container">
+
+        <header class="forum-hero">
+            <div>
+                <span class="forum-eyebrow">IT MUCE ADMINISTRATION</span>
+                <h1>Quản lý <span>Forum</span></h1>
+                <p>Quản lý chủ đề, kiểm duyệt nội dung và xử lý bài viết vi phạm.</p>
+            </div>
+
+            <a href="{% url 'forum_list' %}" class="forum-primary-btn">
+                Xem diễn đàn →
+            </a>
+        </header>
+
+        <div class="forum-admin-stats">
+            <div class="forum-admin-stat">
+                <span>Tổng chủ đề</span>
+                <strong>{{ stats.total }}</strong>
+            </div>
+            <div class="forum-admin-stat">
+                <span>Chờ duyệt</span>
+                <strong>{{ stats.pending }}</strong>
+            </div>
+            <div class="forum-admin-stat">
+                <span>Đã xuất bản</span>
+                <strong>{{ stats.published }}</strong>
+            </div>
+            <div class="forum-admin-stat">
+                <span>Đã ẩn</span>
+                <strong>{{ stats.hidden }}</strong>
+            </div>
+            <div class="forum-admin-stat">
+                <span>Bị từ chối</span>
+                <strong>{{ stats.rejected }}</strong>
+            </div>
+        </div>
+
+        <form method="get" class="forum-admin-filters">
+            <input
+                type="search"
+                name="q"
+                value="{{ search_query }}"
+                placeholder="Tìm tiêu đề, nội dung hoặc username..."
+            >
+
+            <select name="status">
+                <option value="">Tất cả trạng thái</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}"
+                        {% if selected_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <select name="category">
+                <option value="">Tất cả danh mục</option>
+                {% for value, label in category_choices %}
+                    <option value="{{ value }}"
+                        {% if selected_category == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="forum-primary-btn">
+                Lọc
+            </button>
+
+            <a href="{% url 'forum_manage' %}" class="forum-secondary-btn">
+                Đặt lại
+            </a>
+        </form>
+
+        <div class="forum-admin-list-heading">
+            <h2>Danh sách chủ đề</h2>
+            <span>{{ page_obj.paginator.count }} kết quả</span>
+        </div>
+
+        <div class="forum-admin-topic-list">
+            {% for topic in topics %}
+                <article class="forum-admin-topic">
+                    <div class="forum-admin-topic-main">
+                        <div class="forum-topic-meta">
+                            <span class="forum-category">
+                                {{ topic.get_category_display }}
+                            </span>
+
+                            <span class="forum-admin-status status-{{ topic.status }}">
+                                {{ topic.get_status_display }}
+                            </span>
+                        </div>
+
+                        <h3>{{ topic.title }}</h3>
+
+                        <p class="forum-admin-excerpt">
+                            {{ topic.content|striptags|truncatechars:220 }}
+                        </p>
+
+                        <div class="forum-admin-meta">
+                            <span>
+                                Tác giả: <strong>{{ topic.author.username }}</strong>
+                            </span>
+                            <span>
+                                {{ topic.created_at|date:"d/m/Y H:i" }}
+                            </span>
+                            <span>♥ {{ topic.total_likes }}</span>
+                            <span>💬 {{ topic.total_comments }}</span>
+                            <span>⚑ {{ topic.total_reports }}</span>
+                        </div>
+                    </div>
+
+
+
+
+                        <div class="forum-admin-actions">
+                            {% if topic.status == "published" %}
+                                <a
+                                    href="{% url 'forum_detail' topic.pk %}"
+                                    class="forum-secondary-btn"
+                                    target="_blank"
+                                    rel="noopener"
+                                >
+                                    Xem bài
+                                </a>
+                            {% endif %}
+
+                            <a
+                                href="{% url 'forum_edit_topic' topic.pk %}"
+                                class="forum-edit-topic-btn"
+                            >
+                                ✏️ Chỉnh sửa
+                            </a>
+
+                            <form
+                                method="post"
+                                action="{% url 'forum_delete_topic' topic.pk %}"
+                                onsubmit="return confirm('Bạn có chắc muốn xóa vĩnh viễn chủ đề này? Các bình luận, lượt thích và báo cáo liên quan có thể bị xóa theo.');"
+                            >
+                                {% csrf_token %}
+                                <button type="submit" class="forum-admin-delete-btn">
+                                    🗑 Xóa topic
+                                </button>
+                            </form>
+                        </div>
+ 
+
+
+
+                </article>
+            {% empty %}
+                <div class="forum-empty">
+                    <div class="forum-empty-icon">⌕</div>
+                    <h3>Không tìm thấy chủ đề</h3>
+                    <p>Thử thay đổi từ khóa hoặc bộ lọc nhé.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+            <nav class="forum-pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&category={{ selected_category|urlencode }}&page={{ page_obj.previous_page_number }}">
+                        ← Trước
+                    </a>
+                {% endif %}
+
+                <span>
+                    Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?q={{ search_query|urlencode }}&status={{ selected_status|urlencode }}&category={{ selected_category|urlencode }}&page={{ page_obj.next_page_number }}">
+                        Sau →
+                    </a>
+                {% endif %}
+            </nav>
+        {% endif %}
+
+    </div>
+</section>
+{% endblock %}

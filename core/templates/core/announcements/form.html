@@ -1,0 +1,148 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}
+    {% if is_edit %}
+        Chỉnh sửa thông báo | IT MUCE
+    {% else %}
+        Tạo thông báo | IT MUCE
+    {% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/announcements.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="announcement-page">
+
+    <section class="announcement-shell announcement-form-page">
+
+        <!-- Back -->
+        <a href="{% url 'announcement_list' %}"
+           class="announcement-back">
+            <span aria-hidden="true">←</span>
+            Quay lại thông báo
+        </a>
+
+        <!-- Header -->
+        <header class="announcement-form-header">
+
+            <p class="announcement-eyebrow">
+                CONTENT MANAGEMENT
+            </p>
+
+            <h1>
+                {% if is_edit %}
+                    Chỉnh sửa thông báo
+                {% else %}
+                    Tạo thông báo mới
+                {% endif %}
+                <span class="announcement-accent">.</span>
+            </h1>
+
+            <p class="announcement-subtitle">
+                Chia sẻ thông tin chính thức đến cộng đồng IT MUCE.
+            </p>
+
+        </header>
+
+        <!-- Form errors -->
+        {% if form.non_field_errors %}
+            <div class="announcement-message error">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <!-- Form -->
+        <form
+            method="post"
+            enctype="multipart/form-data"
+            class="announcement-form"
+        >
+            {% csrf_token %}
+
+            {% for field in form %}
+
+                <div class="announcement-form-field">
+
+                    {% if field.name == "is_published" %}
+
+                        <label class="announcement-publish-option"
+                               for="{{ field.id_for_label }}">
+
+                            {{ field }}
+
+                            <span>
+                                <strong>{{ field.label }}</strong>
+
+                                <small>
+                                    Bật để hiển thị thông báo công khai.
+                                    Tắt để lưu thành bản nháp.
+                                </small>
+                            </span>
+
+                        </label>
+
+                    {% else %}
+
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+
+                            {% if field.field.required %}
+                                <span class="announcement-required">*</span>
+                            {% endif %}
+                        </label>
+
+                        {{ field }}
+
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <small class="announcement-help">
+                            {{ field.help_text }}
+                        </small>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <p class="announcement-field-error">
+                            {{ error }}
+                        </p>
+                    {% endfor %}
+
+                </div>
+
+            {% endfor %}
+
+            <!-- Actions -->
+            <div class="announcement-form-actions">
+
+                <button type="submit"
+                        class="announcement-button announcement-button-primary">
+                    {% if is_edit %}
+                        Lưu thay đổi
+                    {% else %}
+                        Đăng thông báo
+                    {% endif %}
+
+                    <span aria-hidden="true">↗</span>
+                </button>
+
+                <a href="{% url 'announcement_list' %}"
+                   class="announcement-button announcement-button-secondary">
+                    Hủy
+                </a>
+
+            </div>
+
+        </form>
+
+        <p class="announcement-form-note">
+            Chỉ Admin và Editor mới có quyền quản lý thông báo.
+        </p>
+
+    </section>
+
+</div>
+{% endblock %}

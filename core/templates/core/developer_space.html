@@ -1,0 +1,212 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi" data-theme="{{ active_theme_key|default:'cyber_blue' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#080d18">
+
+    <title>Developer Space | IT MUCE</title>
+
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/developer-space.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/themes.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/cursor-effect.css' %}">
+</head>
+
+<body class="site-layout">
+    <canvas id="techBackground" aria-hidden="true"></canvas>
+    <div id="cursorGlow" aria-hidden="true"></div>
+    <div id="cursorRing" aria-hidden="true"></div>
+
+    {% include "core/partials/_navbar.html" %}
+
+    <main class="space-container">
+
+        <!-- Page heading -->
+        <a href="{% url 'home' %}" class="back-link">
+            ← Trang chủ IT MUCE
+        </a>
+
+        <header class="space-header">
+            <p class="eyebrow">IT MUCE · PERSONALIZATION</p>
+            <h1>Developer Space<span>.</span></h1>
+            <p>Xây dựng không gian cá nhân theo phong cách của bạn.</p>
+        </header>
+
+        <!-- Messages -->
+        {% if messages %}
+            <div class="space-messages">
+                {% for message in messages %}
+                    <div class="space-message {{ message.tags }}" role="status">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Experience panel -->
+        <section class="xp-panel">
+            <div class="xp-information">
+                <p class="eyebrow">YOUR EXPERIENCE</p>
+                <h2>{{ profile.xp }} <span>XP</span></h2>
+                <p>Kinh nghiệm tích lũy từ hoạt động cộng đồng.</p>
+            </div>
+
+            <div class="current-theme">
+                <span class="current-theme-label">THEME ĐANG SỬ DỤNG</span>
+                <strong>
+                    {% if profile.active_theme %}
+                        {{ profile.active_theme.name }}
+                    {% else %}
+                        Chưa chọn theme
+                    {% endif %}
+                </strong>
+            </div>
+        </section>
+
+        <!-- Theme store -->
+        <section class="theme-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">PERSONALIZE YOUR SPACE</p>
+                    <h2>Theme Store</h2>
+                    <p>Mở khóa và trang bị giao diện cá nhân.</p>
+                </div>
+
+                <span class="theme-count">
+                    {{ themes|length }} THEMES
+                </span>
+            </div>
+
+            <div class="theme-grid">
+                {% for theme in themes %}
+                    <article class="theme-card theme-{{ theme.background_key }}">
+
+                        <!-- Theme preview -->
+                        <div class="theme-preview">
+                            <span class="preview-symbol" aria-hidden="true">✦</span>
+
+                            <div class="preview-bottom">
+                                <span class="preview-category">
+                                    IT MUCE · THEME
+                                </span>
+                                <span class="preview-name">
+                                    {{ theme.name }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Theme details -->
+                        <div class="theme-content">
+                            <div class="theme-title-row">
+                                <h3>{{ theme.name }}</h3>
+
+                                {% if profile.active_theme_id == theme.id %}
+                                    <span class="theme-status active">
+                                        Đang dùng
+                                    </span>
+                                {% elif theme.id in unlocked_theme_ids or is_admin %}
+                                    <span class="theme-status unlocked">
+                                        Đã mở khóa
+                                    </span>
+                                {% else %}
+                                    <span class="theme-status locked">
+                                        Chưa mở khóa
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <p class="theme-description">
+                                {{ theme.description }}
+                            </p>
+
+                            <div class="theme-requirements">
+                                <div>
+                                    <span class="requirement-value">
+                                        {{ theme.xp_cost }} XP
+                                    </span>
+                                    <span class="requirement-label">
+                                        Chi phí mở khóa
+                                    </span>
+                                </div>
+
+                                <div>
+                                    <span class="requirement-value">
+                                        {{ theme.required_likes }}
+                                    </span>
+                                    <span class="requirement-label">
+                                        Lượt thích yêu cầu
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="theme-actions">
+                                {% if theme.id in unlocked_theme_ids or is_admin %}
+
+                                    {% if profile.active_theme_id == theme.id %}
+                                        <button
+                                            class="theme-button current-button"
+                                            type="button"
+                                            disabled>
+                                            <span aria-hidden="true">✓</span>
+                                            Đang sử dụng
+                                        </button>
+                                    {% else %}
+                                        <form
+                                            method="post"
+                                            action="{% url 'equip_profile_theme' theme.id %}">
+                                            {% csrf_token %}
+                                            <button
+                                                class="theme-button"
+                                                type="submit">
+                                                Trang bị theme
+                                                <span aria-hidden="true">↗</span>
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                {% else %}
+                                    <form
+                                        method="post"
+                                        action="{% url 'unlock_profile_theme' theme.id %}">
+                                        {% csrf_token %}
+                                        <button
+                                            class="theme-button"
+                                            type="submit">
+                                            Mở khóa theme
+                                            <span aria-hidden="true">↗</span>
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </article>
+
+                {% empty %}
+                    <div class="empty-themes">
+                        <span aria-hidden="true">✦</span>
+                        <h3>Chưa có theme nào</h3>
+                        <p>Các giao diện mới sẽ xuất hiện tại đây khi được kích hoạt.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Back link -->
+        <div class="space-bottom-action">
+            <a href="{% url 'home' %}" class="back-home-link">
+                <span aria-hidden="true">←</span>
+                Quay về trang chủ
+            </a>
+        </div>
+
+    </main>
+
+    {% include "core/partials/_footer.html" %}
+
+    <script src="{% static 'core/js/script.js' %}" defer></script>
+    <script src="{% static 'core/js/cursor-effect.js' %}" defer></script>
+</body>
+</html>

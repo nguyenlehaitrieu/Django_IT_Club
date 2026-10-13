@@ -1,0 +1,404 @@
+
+/* ========================================
+   IT MUCE — GLOBAL THEME SYSTEM
+   Six distinct visual identities
+======================================== */
+
+
+/* ========================================
+   DEFAULT THEME: CYBER BLUE
+   Electric blue / futuristic technology
+======================================== */
+
+:root {
+    --theme-primary: #55b7ff;
+    --theme-secondary: #a3dcff;
+
+    --theme-bg: #080d18;
+    --theme-surface: #0d1726;
+    --theme-surface-hover: #172b45;
+
+    --theme-text: #f2f8ff;
+    --theme-text-muted: #b0c4dc;
+
+    --theme-border: rgba(85, 183, 255, 0.48);
+    --theme-glow: rgba(30, 145, 255, 0.30);
+    --theme-glow-secondary: rgba(0, 200, 255, 0.20);
+}
+
+html[data-theme="cyber_blue"] {
+    --theme-primary: #55b7ff;
+    --theme-secondary: #a3dcff;
+
+    --theme-bg: #080d18;
+    --theme-surface: #0d1726;
+    --theme-surface-hover: #172b45;
+
+    --theme-text: #f2f8ff;
+    --theme-text-muted: #b0c4dc;
+
+    --theme-border: rgba(85, 183, 255, 0.48);
+    --theme-glow: rgba(30, 145, 255, 0.30);
+    --theme-glow-secondary: rgba(0, 200, 255, 0.20);
+}
+
+
+/* ========================================
+   THEME 2: PIXEL FOREST
+   Deep forest / pixel nature
+======================================== */
+
+html[data-theme="pixel_forest"] {
+    --theme-primary: #8bd450;
+    --theme-secondary: #c5f58a;
+
+    --theme-bg: #09150d;
+    --theme-surface: #112319;
+    --theme-surface-hover: #203c27;
+
+    --theme-text: #f1ffe8;
+    --theme-text-muted: #a5c49a;
+
+    --theme-border: rgba(139, 212, 80, 0.34);
+    --theme-glow: rgba(86, 180, 54, 0.18);
+    --theme-glow-secondary: rgba(193, 242, 111, 0.10);
+}
+
+
+/* ========================================
+   THEME 3: VOID REALM
+   Arcane violet / cosmic fantasy
+======================================== */
+
+html[data-theme="void_realm"] {
+    --theme-primary: #c084fc;
+    --theme-secondary: #e5c5ff;
+
+    --theme-bg: #100817;
+    --theme-surface: #1c1029;
+    --theme-surface-hover: #302044;
+
+    --theme-text: #faf0ff;
+    --theme-text-muted: #bca5d2;
+
+    --theme-border: rgba(192, 132, 252, 0.36);
+    --theme-glow: rgba(160, 70, 225, 0.20);
+    --theme-glow-secondary: rgba(221, 150, 255, 0.10);
+}
+
+
+/* ========================================
+   THEME 4: CRIMSON ECLIPSE
+   Blood red / dark fantasy / cursed kingdom
+======================================== */
+
+html[data-theme="crimson_eclipse"] {
+    --theme-primary: #ff4057;
+    --theme-secondary: #ff9b86;
+
+    --theme-bg: #120609;
+    --theme-surface: #240c13;
+    --theme-surface-hover: #3b111c;
+
+    --theme-text: #fff0ef;
+    --theme-text-muted: #d7a0a0;
+
+    --theme-border: rgba(255, 64, 87, 0.36);
+    --theme-glow: rgba(190, 12, 42, 0.24);
+    --theme-glow-secondary: rgba(255, 90, 70, 0.10);
+}
+
+
+/* ========================================
+   THEME 5: NEON ABYSS
+   Acid lime / toxic green / industrial cyberpunk
+   Intentionally NOT blue or teal
+======================================== */
+
+html[data-theme="neon_abyss"] {
+    --theme-primary: #c6ff00;
+    --theme-secondary: #eaff83;
+
+    --theme-bg: #0b0d08;
+    --theme-surface: #171b0e;
+    --theme-surface-hover: #292f13;
+
+    --theme-text: #f5ffdc;
+    --theme-text-muted: #b5c78a;
+
+    --theme-border: rgba(198, 255, 0, 0.32);
+    --theme-glow: rgba(164, 220, 0, 0.17);
+    --theme-glow-secondary: rgba(220, 255, 65, 0.09);
+}
+
+
+/* ========================================
+   THEME 6: SOLAR FLARE
+   Molten amber / bronze / solar reactor
+======================================== */
+
+html[data-theme="solar_flare"] {
+    --theme-primary: #ffb52e;
+    --theme-secondary: #ffe0a0;
+
+    --theme-bg: #160e07;
+    --theme-surface: #28190c;
+    --theme-surface-hover: #42280f;
+
+    --theme-text: #fff5e2;
+    --theme-text-muted: #d8b987;
+
+    --theme-border: rgba(255, 181, 46, 0.34);
+    --theme-glow: rgba(255, 126, 18, 0.19);
+    --theme-glow-secondary: rgba(255, 210, 92, 0.11);
+}
+
+
+/* ========================================
+   GLOBAL BACKGROUND GLOW
+======================================== */
+
+body::before {
+    background:
+        radial-gradient(
+            circle at 18% 25%,
+            var(--theme-glow),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 82% 72%,
+            var(--theme-glow-secondary),
+            transparent 36%
+        ) !important;
+}
+
+
+/* ========================================
+   NAVBAR
+======================================== */
+
+html[data-theme] #mainNav.club-navbar {
+    border-bottom-color: var(--theme-border) !important;
+}
+
+html[data-theme] #mainNav .nav-join-btn {
+    background: var(--theme-primary) !important;
+    border: 1px solid var(--theme-secondary);
+
+    transition:
+        background 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+/* Cyber Blue: electric glow */
+
+html[data-theme="cyber_blue"] #mainNav .nav-join-btn {
+    color: #061321;
+    box-shadow: 0 0 20px rgba(85, 183, 255, 0.25);
+}
+
+html[data-theme="cyber_blue"] #mainNav .nav-join-btn:hover {
+    background: var(--theme-secondary) !important;
+    box-shadow: 0 0 30px rgba(85, 183, 255, 0.40);
+    transform: translateY(-1px);
+}
+
+
+/* Pixel Forest: dark green button */
+
+html[data-theme="pixel_forest"] #mainNav .nav-join-btn {
+    color: #10210b;
+    box-shadow: 0 0 18px rgba(139, 212, 80, 0.18);
+}
+
+
+/* Void Realm: arcane violet */
+
+html[data-theme="void_realm"] #mainNav .nav-join-btn {
+    color: #1c0b2a;
+    box-shadow: 0 0 20px rgba(192, 132, 252, 0.22);
+}
+
+
+/* Crimson Eclipse: blood red */
+
+html[data-theme="crimson_eclipse"] #mainNav .nav-join-btn {
+    color: #24060b;
+    box-shadow: 0 0 20px rgba(255, 64, 87, 0.22);
+}
+
+
+/* Neon Abyss: toxic lime */
+
+html[data-theme="neon_abyss"] #mainNav .nav-join-btn {
+    color: #171d00;
+    box-shadow: 0 0 18px rgba(198, 255, 0, 0.18);
+}
+
+
+/* Solar Flare: molten gold */
+
+html[data-theme="solar_flare"] #mainNav .nav-join-btn {
+    color: #291500;
+    box-shadow: 0 0 20px rgba(255, 181, 46, 0.20);
+}
+
+
+/* ========================================
+   FOOTER
+======================================== */
+
+html[data-theme] .club-footer {
+    border-top-color: var(--theme-border) !important;
+}
+
+
+/* ========================================
+   LINKS & HIGHLIGHTS
+======================================== */
+
+html[data-theme] a:hover,
+html[data-theme] .highlight {
+    color: var(--theme-secondary);
+}
+
+
+/* ========================================
+   FOCUS STATES
+======================================== */
+
+html[data-theme] button:focus-visible,
+html[data-theme] a:focus-visible,
+html[data-theme] input:focus-visible,
+html[data-theme] select:focus-visible,
+html[data-theme] textarea:focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: 3px;
+}
+
+
+/* ========================================
+   CYBER BLUE ACCENTS
+======================================== */
+
+html[data-theme="cyber_blue"] .card:hover,
+html[data-theme="cyber_blue"] .feature-card:hover,
+html[data-theme="cyber_blue"] .project-card:hover {
+    border-color: rgba(85, 183, 255, 0.65);
+    box-shadow:
+        0 0 0 1px rgba(85, 183, 255, 0.08),
+        0 10px 34px rgba(30, 145, 255, 0.18);
+}
+
+html[data-theme="cyber_blue"] .highlight {
+    color: #69c3ff;
+    text-shadow: 0 0 24px rgba(85, 183, 255, 0.22);
+}
+
+html[data-theme="cyber_blue"] button:hover {
+    border-color: var(--theme-secondary);
+}
+
+html[data-theme="cyber_blue"] ::selection {
+    background: rgba(85, 183, 255, 0.38);
+    color: #ffffff;
+}
+
+
+/* ========================================
+   PIXEL FOREST ACCENTS
+======================================== */
+
+html[data-theme="pixel_forest"] .card:hover,
+html[data-theme="pixel_forest"] .feature-card:hover,
+html[data-theme="pixel_forest"] .project-card:hover {
+    border-color: rgba(139, 212, 80, 0.55);
+    box-shadow: 0 10px 30px rgba(86, 180, 54, 0.12);
+}
+
+html[data-theme="pixel_forest"] ::selection {
+    background: rgba(139, 212, 80, 0.35);
+    color: #ffffff;
+}
+
+
+/* ========================================
+   VOID REALM ACCENTS
+======================================== */
+
+html[data-theme="void_realm"] .card:hover,
+html[data-theme="void_realm"] .feature-card:hover,
+html[data-theme="void_realm"] .project-card:hover {
+    border-color: rgba(192, 132, 252, 0.58);
+    box-shadow: 0 10px 34px rgba(160, 70, 225, 0.16);
+}
+
+html[data-theme="void_realm"] ::selection {
+    background: rgba(192, 132, 252, 0.38);
+    color: #ffffff;
+}
+
+
+/* ========================================
+   CRIMSON ECLIPSE ACCENTS
+======================================== */
+
+html[data-theme="crimson_eclipse"] .card:hover,
+html[data-theme="crimson_eclipse"] .feature-card:hover,
+html[data-theme="crimson_eclipse"] .project-card:hover {
+    border-color: rgba(255, 64, 87, 0.60);
+    box-shadow: 0 10px 34px rgba(190, 12, 42, 0.16);
+}
+
+html[data-theme="crimson_eclipse"] ::selection {
+    background: rgba(255, 64, 87, 0.38);
+    color: #ffffff;
+}
+
+
+/* ========================================
+   NEON ABYSS ACCENTS
+======================================== */
+
+html[data-theme="neon_abyss"] .card:hover,
+html[data-theme="neon_abyss"] .feature-card:hover,
+html[data-theme="neon_abyss"] .project-card:hover {
+    border-color: rgba(198, 255, 0, 0.58);
+    box-shadow:
+        0 0 0 1px rgba(198, 255, 0, 0.05),
+        0 10px 30px rgba(164, 220, 0, 0.12);
+}
+
+html[data-theme="neon_abyss"] .highlight {
+    color: #d7ff39;
+    text-shadow: 0 0 18px rgba(198, 255, 0, 0.16);
+}
+
+html[data-theme="neon_abyss"] ::selection {
+    background: rgba(198, 255, 0, 0.32);
+    color: #111600;
+}
+
+
+/* ========================================
+   SOLAR FLARE ACCENTS
+======================================== */
+
+html[data-theme="solar_flare"] .card:hover,
+html[data-theme="solar_flare"] .feature-card:hover,
+html[data-theme="solar_flare"] .project-card:hover {
+    border-color: rgba(255, 181, 46, 0.60);
+    box-shadow: 0 10px 34px rgba(255, 126, 18, 0.14);
+}
+
+html[data-theme="solar_flare"] .highlight {
+    color: #ffc65c;
+    text-shadow: 0 0 20px rgba(255, 181, 46, 0.18);
+}
+
+html[data-theme="solar_flare"] ::selection {
+    background: rgba(255, 181, 46, 0.35);
+    color: #241300;
+}

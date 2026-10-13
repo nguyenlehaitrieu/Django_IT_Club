@@ -1,0 +1,87 @@
+
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Đăng ký | IT MUCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+
+    <a href="{% url 'home' %}" class="brand">
+        <span class="brand-mark">IT</span>
+        <span>IT MUCE</span>
+    </a>
+
+    <section class="auth-card">
+        <p class="eyebrow">JOIN OUR COMMUNITY</p>
+
+        <h1>Tạo tài khoản</h1>
+
+        <p class="description">
+            Bắt đầu hành trình công nghệ cùng IT MUCE.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="message error" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <label for="{{ form.username.id_for_label }}">
+                Tên đăng nhập
+            </label>
+
+            {{ form.username }}
+
+            {% for error in form.username.errors %}
+                <p class="field-error">{{ error }}</p>
+            {% endfor %}
+
+            <label for="{{ form.password1.id_for_label }}">
+                Mật khẩu
+            </label>
+
+            {{ form.password1 }}
+
+            {% for error in form.password1.errors %}
+                <p class="field-error">{{ error }}</p>
+            {% endfor %}
+
+            <label for="{{ form.password2.id_for_label }}">
+                Xác nhận mật khẩu
+            </label>
+
+            {{ form.password2 }}
+
+            {% for error in form.password2.errors %}
+                <p class="field-error">{{ error }}</p>
+            {% endfor %}
+
+            <button type="submit" class="auth-button">
+                Tạo tài khoản <span>↗</span>
+            </button>
+        </form>
+
+        <p class="auth-switch">
+            Đã có tài khoản?
+            <a href="{% url 'login' %}">Đăng nhập</a>
+        </p>
+
+        <a href="{% url 'home' %}" class="back-home">
+            ← Quay về trang chủ
+        </a>
+    </section>
+
+    <p class="auth-footer">
+        LEARN · CREATE · COLLABORATE
+    </p>
+
+</div>
+{% endblock %}

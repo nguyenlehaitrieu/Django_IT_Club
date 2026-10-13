@@ -1,0 +1,76 @@
+
+    {% load static %}
+    <!DOCTYPE html>
+    <html lang="vi" data-theme="{{ active_theme_key|default:'cyber_blue' }}">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>403 Forbidden | IT MUCE</title>
+
+
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/themes.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/cursor-effect.css' %}">
+
+    </head>
+    <body class="error-page">
+        <canvas id="techBackground" aria-hidden="true"></canvas>
+        <div id="cursorGlow" aria-hidden="true"></div>
+        <div id="cursorRing" aria-hidden="true"></div>
+
+        <main class="error-container">
+            <a href="{% url 'home' %}" class="error-brand">
+                <span class="brand-mark">IT</span>
+                <span>
+                    <strong>IT MUCE</strong>
+                    <small>TECH COMMUNITY</small>
+                </span>
+            </a>
+
+            <section class="error-card">
+                <div class="error-icon">
+                    <span>403</span>
+                </div>
+
+                <p class="eyebrow">ACCESS RESTRICTED</p>
+
+                <h1>Không có quyền<br>truy cập.</h1>
+
+                <p class="error-description">
+                    Trang này chỉ dành cho những tài khoản được cấp quyền phù hợp.
+                    Bạn vẫn có thể tiếp tục khám phá cộng đồng IT MUCE.
+                </p>
+
+                <div class="error-code">
+                    <span class="status-light"></span>
+                    HTTP 403 <span>/</span> FORBIDDEN
+                </div>
+
+                <div class="error-actions">
+                    <a href="{% url 'home' %}" class="error-primary">
+                        Về trang chủ <span>↗</span>
+                    </a>
+
+                    <button
+                        type="button"
+                        class="error-secondary"
+                        id="goBackButton"
+                        data-home-url="{% url 'home' %}"
+                    >
+                        ← Quay lại
+                    </button>
+
+                </div>
+            </section>
+
+            <p class="error-footer">
+                LEARN · CREATE · COLLABORATE
+            </p>
+        </main>
+
+        <script src="{% static 'core/js/cursor-effect.js' %}" defer></script>
+        <script src="{% static 'core/js/error-page.js' %}" defer></script>
+
+    </body>
+    </html>
